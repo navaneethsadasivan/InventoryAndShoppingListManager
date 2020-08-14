@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ShoppingListController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +18,61 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/item', function () {
+    return view('item');
+});
+
+Route::get('/list', function () {
+   return view('shoppingList');
+});
+
+Route::get('/history', function () {
+    return view('history');
+});
+
+Route::get('/search', function () {
+    return view('search');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Data Routes
+|--------------------------------------------------------------------------
+|
+*/
+
+Route::get(
+    '/getItems', 'AjaxController@getInventoryItems'
+)->name('getItems');
+
+Route::get(
+    '/getList', 'AjaxController@getShoppingList'
+)->name('getList');
+
+Route::get(
+    '/getApriori', 'AjaxController@getApriori'
+)->name('getApriori');
+
+Route::post(
+    '/postHistory', 'AjaxController@postHistory'
+)->name('postHistory');
+
+Route::post(
+    '/getList', 'AjaxController@getShoppingList'
+)->name('getList');
+
+Route::post(
+    '/postSearchItem', 'AjaxController@postSearchItem'
+)->name('postSearchItem');
+
+Route::post(
+    '/postAddItem', 'AjaxController@postAddNewItem'
+)->name('postAddItem');
+
+Auth::routes();
+
+Route::get(
+    '/home', 'HomeController@index'
+)->name('home');

@@ -13,7 +13,7 @@ class AprioriController extends Controller
     {
         $apriori = new AprioriTrain();
         return [
-            'Assosiate' => $apriori->associate(),
+            'Associate' => $apriori->associate(),
             'Frequent' => $apriori->frequentItems(),
             'Predict' => $apriori->predict()
         ];
