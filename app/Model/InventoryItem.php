@@ -216,18 +216,14 @@ class InventoryItem
 
     public function addItem($item)
     {
-        try {
-            DB::table('inventory_item')->insert(
-                [
-                    'name' => $item['name'],
-                    'price' => $item['price'],
-                    'use_by' => $item['useBy']
-                ]
-            );
+        DB::table('inventory_item')->insert(
+            [
+                'name' => $item['name'],
+                'price' => $item['price'],
+                'use_by' => $item['useBy']
+            ]
+        );
 
-            return 'Item Added';
-        } catch (Exception $e) {
-            return $e->getMessage();
-        }
+        return 'Item Added';
     }
 }

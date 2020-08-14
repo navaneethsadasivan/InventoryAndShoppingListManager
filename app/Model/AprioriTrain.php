@@ -46,25 +46,12 @@ class AprioriTrain
 
     public function generateList($expiringItems)
     {
-        return $expiringItems;
+        $shoppingListModel = new ShoppingList();
+
         $items = DB::select('select * from shopping_list_items WHERE shopping_list_id like "U02%"');
         $itemSet = [];
 
         foreach ($items as $index => $itemData) {
-//            $item = null;
-//            switch ($itemData->item_id) {
-//                case 1: $item = 'Milk'; break;
-//                case 2: $item =  'Bread'; break;
-//                case 3: $item =  'Apples'; break;
-//                case 4: $item =  'Mushrooms'; break;
-//                case 5: $item =  'Cheese'; break;
-//                case 6: $item =  'Flour'; break;
-//                case 7: $item =  'Eggs'; break;
-//                case 8: $item =  'Tortilla'; break;
-//                case 9: $item =  'Chocolates'; break;
-//                case 10: $item =  'Rice'; break;
-//            }
-
             $itemSet[$itemData->shopping_list_id][] = $itemData->item_id;
         }
 
@@ -76,28 +63,9 @@ class AprioriTrain
 
         $this->train();
 
-        foreach ($this->testSamples as $lists) {
-            $frequency[] = array_count_values($lists);
-        }
-        $finalList = [];
-        foreach ($frequency as $items) {
-            foreach ($items as $index => $value) {
-                if (array_key_exists($index, $finalList)) {
-                    $finalList[$index] += $value;
-                } else {
-                    $finalList[$index] = 1;
-                }
-            }
-        }
-        $frequentItems = [];
+        $finalList = $shoppingListModel->getItemsForApriori();
 
-        foreach ($finalList as $itemName => $value) {
-            if ($value/sizeof($this->testSamples) >= 0.7) {
-                $frequentItems[] = $itemName;
-            }
-        }
-
-        $generatedList = $this->buildList($this->associate(), $frequentItems);
+        $generatedList = $this->buildList($this->associate(), $finalList);
 
         $newList = [];
         foreach ($generatedList as $index => $itemId) {
