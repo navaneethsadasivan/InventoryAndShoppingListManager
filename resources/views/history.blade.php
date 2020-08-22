@@ -1,5 +1,51 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <style>
+            .top-right {
+                text-align: right;
+                width: 50%;
+            }
+
+            .header {
+                background-color: #2a9055;
+                padding: 5px;
+            }
+            .links > a {
+                color: #ced4da;
+                padding: 0 25px;
+                font-size: 13px;
+                font-weight: 600;
+                letter-spacing: .1rem;
+                text-decoration: none;
+                text-transform: uppercase;
+            }
+            .page-title {
+                color: #ced4da;
+                text-align: left;
+                padding: 0 25px;
+                font-size: 20px;
+                font-weight: 600;
+                letter-spacing: .1rem;
+                text-decoration: none;
+                text-transform: uppercase;
+                width: 50%;
+            }
+
+            .border-box {
+                border: solid 1px black;
+                padding: 5px;
+                margin: 5px;
+                background-color: #a1cbef;
+                width: 25%;
+            }
+
+            .shopping-list {
+                background-color: #fff8b3;
+                width: auto;
+            }
+        </style>
+    </head>
     <body>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,55 +53,41 @@
         @extends('layouts.app')
 
         @section('content')
-            <navbar title="History"></navbar>
+            @if (Route::has('login'))
+                <div class="header row">
+                    <div class="page-title col-6">
+                        <p>Enter History</p>
+                    </div>
+                    <div class="top-right links col-6">
+                        @auth
+                            <a href="{{url('/')}}">Home</a>
+                            <a href="{{ url('/home') }}">{{\Illuminate\Support\Facades\Auth::user()->name}}</a>
+                        @else
+                            <a href="{{ route('login') }}">Login</a>
 
-{{--        <div class="list-1">--}}
-{{--            <p>Enter the items in list 1</p>--}}
-{{--            <textarea id="item-list-1"></textarea>--}}
-{{--            <button onclick="enter('item-list-1', 'list-items-1')">Enter</button>--}}
-{{--            <p id="list-items-1"></p>--}}
-{{--            <button onclick="submit('list-items-1')">Submit</button>--}}
-{{--        </div>--}}
-{{--        <hr>--}}
-{{--        <div class="list-2">--}}
-{{--            <p>Enter the items in list 2</p>--}}
-{{--            <textarea id="item-list-2"></textarea>--}}
-{{--            <button onclick="enter('item-list-2','list-items-2')">Enter</button>--}}
-{{--            <p id="list-items-2"></p>--}}
-{{--            <button onclick="submit('list-items-2')">Submit</button>--}}
-{{--        </div>--}}
-{{--        <hr>--}}
-{{--        <div class="list-3">--}}
-{{--            <p>Enter the items in list 3</p>--}}
-{{--            <textarea id="item-list-3"></textarea>--}}
-{{--            <button onclick="enter('item-list-3','list-items-3')">Enter</button>--}}
-{{--            <p id="list-items-3"></p>--}}
-{{--            <button onclick="submit('list-items-3')">Submit</button>--}}
-{{--        </div>--}}
-{{--        <hr>--}}
-{{--        <div class="list-4">--}}
-{{--            <p>Enter the items in list 4</p>--}}
-{{--            <textarea id="item-list-4"></textarea>--}}
-{{--            <button onclick="enter('item-list-4','list-items-4')">Enter</button>--}}
-{{--            <p id="list-items-4"></p>--}}
-{{--            <button onclick="submit('list-items-4')">Submit</button>--}}
-{{--        </div>--}}
-{{--        <hr>--}}
-{{--        <div class="list-5">--}}
-{{--            <p>Enter the items in list 5</p>--}}
-{{--            <textarea id="item-list-5"></textarea>--}}
-{{--            <button onclick="enter('item-list-5','list-items-5')">Enter</button>--}}
-{{--            <p id="list-items-5"></p>--}}
-{{--            <button onclick="submit('list-items-5')">Submit</button>--}}
-{{--        </div>--}}
+                            @if (Route::has('register'))
+                                <a href="{{ route('register') }}">Register</a>
+                            @endif
+                        @endauth
+                    </div>
+                </div>
+            @endif
 
-            <input id="searchElement" type="text" placeholder="Type in the item">
-            <button onclick="search()">Search</button>
+            <div class="alert-notification"></div>
 
-            <div id="searchRender"></div>
-
-            <div id="listItems"></div>
-            <button id="final-submit" onclick="finalSubmit()">Confirm</button>
+            @auth
+                <div class="d-flex row align-items-center justify-content-center p-5">
+                    <input id="searchElement" class="p-2 mr-2" type="text" placeholder="Type in the item">
+                    <button onclick="search()" class="btn btn-primary">Search</button>
+                </div>
+                <div id="searchRender" class="d-flex justify-content-center flex-wrap"></div>
+                <div id="listItems" class="shopping-list d-flex justify-content-center"></div>
+                <button id="final-submit" class="btn btn-success" onclick="finalSubmit()">Confirm</button>
+            @else
+                <div class="alert alert-danger">
+                    You must be logged in to access this feature
+                </div>
+            @endauth
         @endsection
         <script>
             let historyItems = []
@@ -112,7 +144,11 @@
                     sendData()
                 } else {
                     window.document.getElementById('searchElement').style.borderColor = 'red';
-                    window.document.getElementById('searchRender').innerHTML = 'Enter an item to search';
+                    $('.alert-notification').append(
+                        '<div class="alert alert-danger">Enter an item to search</div>'
+                    ).delay(3000).slideUp(200, function () {
+                        $(this).alert('close')
+                    })
                 }
             }
 
@@ -133,33 +169,33 @@
             }
 
             function render(item, index) {
-                window.document.getElementById('searchRender').innerHTML += 'Name: ' + item.name + '<br>' +
-                                                                            'Price: ' + item.price + '<br>' +
-                                                                            'Use By: ' + item.use_by + '<br>'
-                let button = window.document.createElement('BUTTON');
-                button.setAttribute('id', item.id)
-                button.setAttribute('value', item.name)
-                button.innerHTML = 'Add Item'
-                document.addEventListener('click', function (e) {
-                    event.stopImmediatePropagation()
-                    if (Number(e.target.id) === item.id) {
-                        window.document.getElementById('searchElement').value = ''
-                        window.document.getElementById('listItems').innerHTML += item.name + '<br>'
-                        historyItems.push(e.target.id)
-                        window.document.getElementById('searchRender').innerHTML = ''
-                    }
-                })
+                $('#searchRender').append(
+                    '<div class="border-box">' +
+                        '<label><strong>Name: </strong></label>' +
+                        item.name + '<br>'+
+                        '<label><strong>Price: </strong></label>' +
+                        item.price + '<br>'+
+                        '<label><strong>Use By: </strong></label>' +
+                        item.use_by + '<span> week(s) </span>'+ '<br>'+
+                        '<button class="btn btn-light" id="' + item.id + '" value="' + item.name + '"onclick="addItem(this.id, this.value)">Add Item</button>' +
+                    '</div>'
+                )
+            }
 
-                window.document.getElementById('searchRender').appendChild(button)
-                window.document.getElementById('searchRender').innerHTML += '<hr>'
+            function addItem(id, name) {
+                $('#listItems').append(
+                    '<div class="flex-row"> ' +
+                        '<p>' + name + '</p>' +
+                    '</div>'
+                )
+                historyItems.push(id);
+                $('#searchRender').empty();
+                $('.alert-notification').empty().append(
+                    '<div class="alert alert-success">Item Added</div>'
+                ).delay(3000).slideUp(200, function () {
+                    $(this).alert('close')
+                })
             }
         </script>
-
-        <style>
-            #final-submit {
-                align-content: center;
-                background-color: cornflowerblue;
-            }
-        </style>
     </body>
 </html>

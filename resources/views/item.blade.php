@@ -9,7 +9,6 @@
 
             .header {
                 background-color: #2a9055;
-                width: 100%;
                 padding: 5px;
             }
             .links > a {
@@ -25,7 +24,7 @@
                 color: #ced4da;
                 text-align: left;
                 padding: 0 25px;
-                font-size: 13px;
+                font-size: 20px;
                 font-weight: 600;
                 letter-spacing: .1rem;
                 text-decoration: none;
