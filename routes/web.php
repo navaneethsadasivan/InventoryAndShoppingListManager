@@ -35,6 +35,8 @@ Route::get('/search', function () {
     return view('search');
 });
 
+Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
+
 
 /*
 |--------------------------------------------------------------------------

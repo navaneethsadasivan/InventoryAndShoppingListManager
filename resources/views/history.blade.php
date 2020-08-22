@@ -141,13 +141,12 @@
                 button.setAttribute('value', item.name)
                 button.innerHTML = 'Add Item'
                 document.addEventListener('click', function (e) {
+                    event.stopImmediatePropagation()
                     if (Number(e.target.id) === item.id) {
-                        console.log(e.target.id, item.name)
                         window.document.getElementById('searchElement').value = ''
                         window.document.getElementById('listItems').innerHTML += item.name + '<br>'
                         historyItems.push(e.target.id)
                         window.document.getElementById('searchRender').innerHTML = ''
-                        // alert('Item Added')
                     }
                 })
 

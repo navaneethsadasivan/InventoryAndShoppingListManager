@@ -16,8 +16,21 @@
 
                     {{ __('You are logged in!') }}
                 </div>
+
+                <button onclick="logout()" class="btn btn-primary">
+                    Logout
+                </button>
             </div>
         </div>
     </div>
 </div>
 @endsection
+
+<script>
+    function logout() {
+        $.ajax({
+            type: 'GET',
+            url: '/logout'
+        })
+    }
+</script>

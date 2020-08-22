@@ -40,6 +40,13 @@
                 top: 18px;
             }
 
+            .header {
+                background-color: #2a9055;
+                width: 100%;
+                padding: 10px;
+                text-align: right;
+            }
+
             .content {
                 text-align: center;
             }
@@ -49,7 +56,7 @@
             }
 
             .links > a {
-                color: #636b6f;
+                color: #ced4da;
                 padding: 0 25px;
                 font-size: 13px;
                 font-weight: 600;
@@ -58,26 +65,31 @@
                 text-transform: uppercase;
             }
 
+            /*.wrapper {*/
+            /*    width: 100%;*/
+            /*    align-items: stretch;*/
+            /*}*/
+
             .m-b-md {
                 margin-bottom: 30px;
             }
         </style>
     </head>
     <body>
-        <div class="flex-center position-ref full-height">
-{{--            @if (Route::has('login'))--}}
-{{--                <div class="top-right links">--}}
-{{--                    @auth--}}
-{{--                        <a href="{{ url('/home') }}">Home</a>--}}
-{{--                    @else--}}
-{{--                        <a href="{{ route('login') }}">Login</a>--}}
+        <div class="flex-center position-ref full-height wrapper">
+            @if (Route::has('login'))
+                <div class="top-right links header">
+                    @auth
+                        <a href="{{ url('/home') }}">Welcome {{\Illuminate\Support\Facades\Auth::user()->name}}</a>
+                    @else
+                        <a href="{{ route('login') }}">Login</a>
 
-{{--                        @if (Route::has('register'))--}}
-{{--                            <a href="{{ route('register') }}">Register</a>--}}
-{{--                        @endif--}}
-{{--                    @endauth--}}
-{{--                </div>--}}
-{{--            @endif--}}
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}">Register</a>
+                        @endif
+                    @endauth
+                </div>
+            @endif
 
             <div class="content">
                 <div class="title m-b-md">

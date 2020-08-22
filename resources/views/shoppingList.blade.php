@@ -20,9 +20,13 @@
             <button onclick="generate()" id="generateButton">Generate List</button>
 
             <div id="generatedList"></div>
+
+            <button onclick="confirmList()">Confirm</button>
         @endsection
 
         <script>
+            let itemIds = [];
+
             function generate() {
                 $.ajax({
                     headers: {
@@ -31,16 +35,29 @@
                     type: 'GET',
                     url: '/getList',
                     success: function (data) {
-                        console.log(data)
+                        let itemName = Object.values(data['list'])
+                        itemIds = Object.keys(data['list'])
                         window.document.getElementById('generateButton').disabled = true
-
-                        data['list'].forEach(insertItems)
+                        itemName.forEach(insertItems)
                     }
                 })
             }
 
             function insertItems(item, index) {
                 window.document.getElementById('generatedList').innerHTML += item + '<br>'
+            }
+
+            function confirmList() {
+                $.ajax({
+                    headers : {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    type: 'POST',
+                    url: '/postHistory',
+                    data: JSON.stringify({0: itemIds}),
+                    success: function (data) {
+                    }
+                })
             }
         </script>
     </body>
