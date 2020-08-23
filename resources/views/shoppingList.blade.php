@@ -45,7 +45,7 @@
             @if (Route::has('login'))
                 <div class="header row">
                     <div class="page-title col-6">
-                        <p>Items</p>
+                        <p>Generate Shopping List</p>
                     </div>
                     <div class="top-right links col-6">
                         @auth
@@ -62,21 +62,29 @@
                 </div>
             @endif
 
-            <div class="d-flex align-items-center justify-content-center my-4">
-                <button
-                    onclick="generate()"
-                    id="generateButton"
-                    class="btn btn-primary"
-                >Generate List</button>
-            </div>
+            <div class="alert-notification"></div>
 
-            <div class="d-flex align-items-center justify-content-center my-4">
-                <div id="generatedList"></div>
-            </div>
+            @auth
+                <div class="d-flex align-items-center justify-content-center my-4">
+                    <button
+                        onclick="generate()"
+                        id="generateButton"
+                        class="btn btn-primary"
+                    >Generate List</button>
+                </div>
 
-            <div class="d-flex align-items-center justify-content-center my-4">
-                <button onclick="confirmList()" class="btn btn-success confirmButton" hidden>Confirm</button>
-            </div>
+                <div class="d-flex align-items-center justify-content-center my-4">
+                    <div id="generatedList"></div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-center my-4">
+                    <button onclick="confirmList()" class="btn btn-success confirmButton" hidden>Confirm</button>
+                </div>
+            @else
+                <div class="alert alert-danger">
+                    You must be logged in to access this feature
+                </div>
+            @endauth
         @endsection
 
         <script>
