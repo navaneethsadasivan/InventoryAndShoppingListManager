@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class AjaxController
@@ -24,7 +25,7 @@ class AjaxController extends Controller
     public function postHistory(Request $request) {
         $data = null;
         if (json_decode($request->getContent())) {
-            $data = ShoppingListController::getHistoryData(json_decode($request->getContent()));
+            $data = ShoppingListController::getHistoryData(json_decode($request->getContent()), Auth::user());
         }
 
         return response()->json(['message' => $data], 200);
@@ -43,6 +44,15 @@ class AjaxController extends Controller
         $response = null;
         if (json_decode($request->getContent())) {
             $response = InventoryItemController::addItem(json_decode($request->getContent()));
+        }
+
+        return response()->json(['message' => $response], 200);
+    }
+
+    public function postNewList(Request $request) {
+        $response = null;
+        if (json_decode($request->getContent())) {
+            $response = ShoppingListController::getHistoryData(json_decode($request->getContent()), Auth::user());
         }
 
         return response()->json(['message' => $response], 200);

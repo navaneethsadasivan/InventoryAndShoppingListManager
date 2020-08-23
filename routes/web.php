@@ -62,8 +62,8 @@ Route::post(
 )->name('postHistory');
 
 Route::post(
-    '/getList', 'AjaxController@getShoppingList'
-)->name('getList');
+    '/postNewList', 'AjaxController@postNewList'
+)->name('postNewList');
 
 Route::post(
     '/postSearchItem', 'AjaxController@postSearchItem'
