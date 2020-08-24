@@ -102,9 +102,9 @@
                         $('#generateButton').prop('hidden', true)
                         $('.confirmButton').prop('hidden', false)
                         $('#generatedList').append(
-                            '<div class="d-flex row justify-content-between">' +
-                                '<p class="col-9"><strong>Item</strong></p>' +
-                                '<p class="col-3"><strong>Price(&#163)</strong></p>' +
+                            '<div class="d-flex row justify-content-between col-12">' +
+                                '<p class="col-10 border-bottom"><strong>Item</strong></p>' +
+                                '<p class="col-2 border-bottom"><strong>Price(&#163)</strong></p>' +
                             '</div>'
                         );
                         itemData.forEach(insertItems)
@@ -132,7 +132,14 @@
                     url: '/postNewList',
                     data: JSON.stringify({0: itemIds}),
                     success: function (data) {
-                        console.log(data)
+                        $('#generatedList').empty();
+                        $('.alert-notification').append(
+                            '<div class="alert-success">List has been confirmed</div>'
+                        ).delay(3000).slideUp(200, function () {
+                            $(this).alert('close')
+                        })
+                        $('#generateButton').prop('hidden', false)
+                        $('.confirmButton').prop('hidden', true)
                     }
                 })
             }
