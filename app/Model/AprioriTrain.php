@@ -9,19 +9,33 @@ use Phpml\Association\Apriori;
  */
 class AprioriTrain
 {
-//    protected $testSamples = [
-//        ['Milk', 'Bread', 'Eggs', 'Apples', 'Rice'],
-//        ['Milk', 'Bread', 'Flour', 'Tortilla', 'Chocolates'],
-//        ['Milk', 'Tortilla', 'Chocolates', 'Apples', 'Eggs'],
-//        ['Milk', 'Bread', 'Rice', 'Mushrooms', 'Rice'],
-//        ['Tortilla', 'Eggs', 'Apples', 'Chocolates', 'Flour']
-//    ];
-
     protected $testSamples = [];
 
     protected $testLabels = [];
 
     protected $associator = null;
+
+    protected $userId;
+
+    public function __construct($userId)
+    {
+        $this->setUserId($userId);
+    }
+
+    public function getUserIdWithoutFormat()
+    {
+        return $this->userId;
+    }
+
+    public function getUserId()
+    {
+        return sprintf("%'02d", $this->userId);
+    }
+
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
+    }
 
     protected function train($sup = 0.5, $conf = 0.85)
     {
@@ -44,11 +58,11 @@ class AprioriTrain
         return $this->associator->predict($items);
     }
 
-    public function generateList($expiringItems)
+    public function generateList()
     {
-        $shoppingListModel = new ShoppingList();
+        $shoppingListModel = new ShoppingList($this->getUserIdWithoutFormat());
 
-        $items = DB::select('select * from shopping_list_items WHERE shopping_list_id like "U02%"');
+        $items = DB::select('select * from shopping_list_items WHERE shopping_list_id like "U' . $this->getUserId() . '%"');
         $itemSet = [];
 
         foreach ($items as $index => $itemData) {

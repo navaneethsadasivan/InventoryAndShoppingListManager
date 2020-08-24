@@ -26,6 +26,16 @@ class ShoppingList
     protected $totalItemCount;
 
     /**
+     * @var int
+     */
+    protected $user;
+
+    public function __construct($userId)
+    {
+        $this->setUserId($userId);
+    }
+
+    /**
      * @return InventoryItem[]
      */
     public function getInventoryItems()
@@ -79,11 +89,21 @@ class ShoppingList
         $this->totalItemCount = $totalItemCount;
     }
 
+    public function getUserId()
+    {
+        return sprintf("%'02d", $this->user);
+    }
+
+    public function setUserId($userId)
+    {
+        $this->user = $userId;
+    }
+
     public function generateList()
     {
         //add logic
-        $ml = new AprioriTrain();
-        return $ml->generateList($this->getExpiredItems());
+        $ml = new AprioriTrain($this->getUserId());
+        return $ml->generateList();
 
 //        $item1 = new InventoryItem(2);
 //        $this->setInventoryItems($item1);
@@ -162,7 +182,7 @@ class ShoppingList
 
     public function getItemsForApriori()
     {
-        $items = DB::select('select * from shopping_list_items WHERE shopping_list_id like "U02%"');
+        $items = DB::select('select * from shopping_list_items WHERE shopping_list_id like "U' . $this->getUserId() . '%"');
         $itemSet = [];
         $historyItems = [];
         $frequency = [];
@@ -213,16 +233,23 @@ class ShoppingList
     public function getExpiredItems()
     {
         $largestUseByTime = DB::selectone('select max(use_by) as longest from inventory_item');
-        $rowCount = DB::selectone('select count(*) as rowCount from shopping_list where list_id like "U02%"');
+        $rowCount = DB::selectone('select count(*) as rowCount from shopping_list where list_id like "U' . $this->getUserId() . '%"');
+
+        $offsetQuery = '';
+
+        if ($largestUseByTime->longest < $rowCount->rowCount) {
+            $offsetQuery = ' OFFSET ' . ($rowCount->rowCount - $largestUseByTime->longest);
+        }
+
         $latestListIds = DB::select(
             'select
                 list_id
             from
                 shopping_list
-            where list_id like "U02%"
+            where list_id like "U' . $this->getUserId() . '%"
             ORDER BY id asc
             limit ' . $largestUseByTime->longest .
-            ' OFFSET ' . ($rowCount->rowCount - $largestUseByTime->longest)
+            $offsetQuery
         );
 
         $historyListItems = [];

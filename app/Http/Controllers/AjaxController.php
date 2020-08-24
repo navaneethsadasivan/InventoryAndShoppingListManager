@@ -15,7 +15,7 @@ class AjaxController extends Controller
     }
 
     public function getShoppingList() {
-        return response()->json(['list' => ShoppingListController::show()], 200);
+        return response()->json(['list' => ShoppingListController::show(Auth::user())], 200);
     }
 
     public function getApriori() {

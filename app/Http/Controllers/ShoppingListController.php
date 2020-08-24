@@ -9,9 +9,10 @@ use App\Model\ShoppingList;
  */
 class ShoppingListController extends Controller
 {
-    public static function show()
+    public static function show($userDetails)
     {
-        $list = new ShoppingList();
+        $userId = $userDetails['id'];
+        $list = new ShoppingList($userId);
         return $list->showList();
     }
 
