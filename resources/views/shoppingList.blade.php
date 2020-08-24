@@ -98,20 +98,27 @@
                     type: 'GET',
                     url: '/getList',
                     success: function (data) {
-                        let itemName = Object.entries(data['list'])
-                        itemIds = Object.keys(data['list'])
+                        let itemData = Object.entries(data['list'])
                         $('#generateButton').prop('hidden', true)
                         $('.confirmButton').prop('hidden', false)
-                        itemName.forEach(insertItems)
+                        $('#generatedList').append(
+                            '<div class="d-flex row justify-content-between">' +
+                                '<p class="col-9"><strong>Item</strong></p>' +
+                                '<p class="col-3"><strong>Price(&#163)</strong></p>' +
+                            '</div>'
+                        );
+                        itemData.forEach(insertItems)
                     }
                 })
             }
 
             function insertItems(item, index) {
+                itemIds.push(item[1].id)
                 $('#generatedList').append(
                     '<div class="d-flex justify-content-between">' +
-                        '<span>' + item[1] + '</span>' +
-                        '<button class="btn btn-light" id="'+ item[0] +'" onclick="removeItem(this.id)">X</button>' +
+                        '<span class="col-10">' + item[1].name + '</span>' +
+                        '<span class="col-2">' + parseFloat(item[1].price).toFixed(2) + '</span>' +
+                        '<button class="btn btn-light" id="'+ item[1].id +'" onclick="removeItem(this.id)">X</button>' +
                     '</div>'
                 )
             }

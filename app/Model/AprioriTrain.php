@@ -85,7 +85,7 @@ class AprioriTrain
         foreach ($generatedList as $index => $itemId) {
             $item = DB::selectOne('select * from inventory_item where id =' . $itemId);
 //            array_push($newList, $item->name);
-            $newList[$itemId] = $item->name;
+            $newList[] = $item;
         }
 
         return $newList;

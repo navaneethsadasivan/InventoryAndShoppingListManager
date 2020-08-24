@@ -19,7 +19,7 @@ class ShoppingListController extends Controller
     public static function getHistoryData($data, $userDetails)
     {
         $userId = $userDetails['id'];
-        $shoppingList = new ShoppingList();
-        return $shoppingList->saveHistory($data, $userId);
+        $shoppingList = new ShoppingList($userId);
+        return $shoppingList->saveHistory($data);
     }
 }

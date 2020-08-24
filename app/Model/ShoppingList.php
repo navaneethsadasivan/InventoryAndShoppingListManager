@@ -94,6 +94,11 @@ class ShoppingList
         return sprintf("%'02d", $this->user);
     }
 
+    public function getUserIdWithoutFormat()
+    {
+        return $this->user;
+    }
+
     public function setUserId($userId)
     {
         $this->user = $userId;
@@ -127,14 +132,12 @@ class ShoppingList
         return $this->generateList();
     }
 
-    public function generateListId($userId)
+    public function generateListId()
     {
         $day = substr(date('D'), -3, 1);
         $dmy = date('dmy');
 
         $db = DB::selectOne('select list_id from shopping_list ORDER BY id DESC');
-
-        $user = sprintf("%'02d", $userId);
 
         if ($db === null) {
             $listNo = '001';
@@ -144,14 +147,14 @@ class ShoppingList
             $listNo = sprintf("%'03d", $listNo);
         }
 
-        return 'U' . $user . $day . $dmy . $listNo;
+        return 'U' . $this->getUserId() . $day . $dmy . $listNo;
     }
 
-    public function saveHistory($previousLists, $userId)
+    public function saveHistory($previousLists)
     {
         foreach ($previousLists as $index => $prevShoppingList) {
             $totalPrice = 0.00;
-            $listId = $this->generateListId($userId);
+            $listId = $this->generateListId();
 
             foreach ($prevShoppingList as $item) {
                 $itemPrice = DB::selectOne('select price from inventory_item where id = ' . $item);
@@ -161,7 +164,7 @@ class ShoppingList
             DB::table('shopping_list')->insert(
                 [
                     'list_id' => $listId,
-                    'user_id' => $userId,
+                    'user_id' => $this->getUserIdWithoutFormat(),
                     'created_at' => date('Y-m-d H:i:s'),
                     'total_items' => count($prevShoppingList),
                     'total_price' => $totalPrice
