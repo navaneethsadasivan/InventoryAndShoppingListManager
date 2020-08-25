@@ -52,6 +52,10 @@ class InventoryItem
      */
     protected $usage;
 
+    /**
+     * InventoryItem constructor.
+     * @param null|int $id
+     */
     public function __construct($id = null)
     {
         if ($id === null) {
@@ -186,6 +190,9 @@ class InventoryItem
         $this->usage = $usage;
     }
 
+    /**
+     * @return array
+     */
     public function asArray()
     {
         return [
@@ -198,11 +205,18 @@ class InventoryItem
         ];
     }
 
+    /**
+     * @return array
+     */
     public function getData()
     {
         return DB::select('select * from inventory_item');
     }
 
+    /**
+     * @param int $item
+     * @return array
+     */
     public function getSearchData($item)
     {
         $db = DB::select('select * from inventory_item where name like "%' . $item . '%"');
@@ -214,6 +228,10 @@ class InventoryItem
         return $db;
     }
 
+    /**
+     * @param int $item
+     * @return string
+     */
     public function addItem($item)
     {
         DB::table('inventory_item')->insert(

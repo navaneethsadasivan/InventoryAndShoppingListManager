@@ -89,49 +89,48 @@ class ShoppingList
         $this->totalItemCount = $totalItemCount;
     }
 
+    /**
+     * @return string
+     */
     public function getUserId()
     {
         return sprintf("%'02d", $this->user);
     }
 
+    /**
+     * @return int
+     */
     public function getUserIdWithoutFormat()
     {
         return $this->user;
     }
 
+    /**
+     * @param int $userId
+     */
     public function setUserId($userId)
     {
         $this->user = $userId;
     }
 
+    /**
+     * @return array
+     */
     public function generateList()
     {
         //add logic
         $ml = new AprioriTrain($this->getUserId());
         return $ml->generateList();
-
-//        $item1 = new InventoryItem(2);
-//        $this->setInventoryItems($item1);
-//
-//        $item2 = new InventoryItem(3);
-//        $this->setInventoryItems($item2);
-//
-//        $this->setTotalItemCount([$item1, $item2]);
-//
-//        $total = $item1->getPrice() + $item2->getPrice();
-//        $this->setTotalPrice($total);
     }
-
+//TODO: Need to modify this code to be more streamlined ^ v
     public function showList()
     {
-        //        return [
-//            'Items' => $this->getInventoryItems(),
-//            'Total Price' => $this->getTotalPrice(),
-//            'Item count' => $this->getTotalItemCount()
-//        ];
         return $this->generateList();
     }
 
+    /**
+     * @return string
+     */
     public function generateListId()
     {
         $day = substr(date('D'), -3, 1);
@@ -150,6 +149,10 @@ class ShoppingList
         return 'U' . $this->getUserId() . $day . $dmy . $listNo;
     }
 
+    /**
+     * @param array $previousLists
+     * @return string[]
+     */
     public function saveHistory($previousLists)
     {
         $userInventory = new Inventory($this->getUserIdWithoutFormat());
@@ -189,6 +192,9 @@ class ShoppingList
         ];
     }
 
+    /**
+     * @return array
+     */
     public function getItemsForApriori()
     {
         $items = DB::select('select * from shopping_list_items WHERE shopping_list_id like "U' . $this->getUserId() . '%"');
@@ -239,6 +245,9 @@ class ShoppingList
         return $finalItems;
     }
 
+    /**
+     * @return array
+     */
     public function getExpiredItems()
     {
         $largestUseByTime = DB::selectone('select max(use_by) as longest from inventory_item');

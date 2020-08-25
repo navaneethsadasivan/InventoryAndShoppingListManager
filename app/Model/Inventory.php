@@ -95,6 +95,9 @@ class Inventory
         $this->sections = $sections;
     }
 
+    /**
+     * @return array
+     */
     public function getUserInventory()
     {
         $itemDetails = [];
@@ -117,6 +120,9 @@ class Inventory
         return $itemDetails;
     }
 
+    /**
+     * @param int $item
+     */
     public function save($item)
     {
         $inventoryItem = DB::selectOne('
@@ -148,6 +154,10 @@ class Inventory
         }
     }
 
+    /**
+     * @param int $itemId
+     * @throws \Exception
+     */
     public function removeStock($itemId)
     {
         $inventoryItem = DB::selectOne('select * from inventory_user where item_id = ' . $itemId);
@@ -170,6 +180,11 @@ class Inventory
         }
     }
 
+    /**
+     * @param int $itemId
+     * @return mixed
+     * @throws \Exception
+     */
     public function addStock($itemId)
     {
         $inventoryItem = DB::selectOne('select * from inventory_user where item_id = ' . $itemId);
