@@ -1,6 +1,9 @@
 <?php
 namespace App\Model;
 
+use http\Exception;
+use Illuminate\Support\Facades\DB;
+
 /**
  * Class Inventory
  * @package App\Model
@@ -23,6 +26,26 @@ class Inventory
      * @var array
      */
     protected $sections;
+
+    /**
+     * @var int
+     */
+    protected $user;
+
+    public function __construct($userId)
+    {
+        $this->setUser($userId);
+    }
+
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    public function setUser($userId)
+    {
+        $this->user = $userId;
+    }
 
     /**
      * @return InventoryItem[]
@@ -70,5 +93,65 @@ class Inventory
     public function setSections(array $sections)
     {
         $this->sections = $sections;
+    }
+
+    public function getUserInventory()
+    {
+        return DB::select('
+            select * from inventory_user where user_id =
+        ' . $this->getUser());
+    }
+
+    public function save($item)
+    {
+        $inventoryItem = DB::selectOne('
+            select * from inventory_user where item_id =
+        ' . $item);
+
+        if ($inventoryItem !== null) {
+            DB::table('inventory_user')
+                ->where(
+                    [
+                        'user_id' => $this->getUser(),
+                        'item_id' => $item
+                    ]
+                )
+                ->update(
+                [
+                    'current_stock' => $inventoryItem->current_stock + 1
+                ]
+            );
+        } else {
+            DB::table('inventory_user')
+                ->insert(
+                    [
+                        'user_id' => $this->getUser(),
+                        'item_id' => $item,
+                        'current_stock' => 1
+                    ]
+            );
+        }
+    }
+
+    public function removeStock($itemId)
+    {
+        $inventoryItem = DB::selectOne('select * from inventory_user where item_id = ' . $itemId);
+        if ($inventoryItem) {
+            if ($inventoryItem->current_stock === 0) {
+                throw new \Exception('Cannot remove item with stock 0');
+            } else {
+                DB::table('inventory_user')
+                    ->where(
+                        [
+                            'user_id' => $this->getUser(),
+                            'item_id' => $itemId
+                        ]
+                    )->update(
+                        [
+                            'current_stock' => $inventoryItem->current_stock - 1
+                        ]
+                );
+            }
+        }
     }
 }

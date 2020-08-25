@@ -152,6 +152,7 @@ class ShoppingList
 
     public function saveHistory($previousLists)
     {
+        $userInventory = new Inventory($this->getUserIdWithoutFormat());
         foreach ($previousLists as $index => $prevShoppingList) {
             $totalPrice = 0.00;
             $listId = $this->generateListId();
@@ -179,8 +180,13 @@ class ShoppingList
                         'quantity' => 1
                     ]
                 );
+
+                $userInventory->save($item);
             }
         }
+        return [
+            'message' => 'List saved successfully'
+        ];
     }
 
     public function getItemsForApriori()
