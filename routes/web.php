@@ -35,6 +35,10 @@ Route::get('/search', function () {
     return view('search');
 });
 
+Route::get('/inventory', function () {
+    return view ('userInventory');
+});
+
 Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
 
 
@@ -78,3 +82,15 @@ Auth::routes();
 Route::get(
     '/home', 'HomeController@index'
 )->name('home');
+
+Route::get(
+    '/getUserInventory', 'AjaxController@getUserInventory'
+)->name('getUserInventory');
+
+Route::post(
+    '/postAddItemUserInventory', 'AjaxController@postAddItem'
+)->name('postAddItemUserInventory');
+
+Route::post(
+    '/postRemoveItemUserInventory', 'AjaxController@postRemoveItem'
+)->name('postRemoveItemUserInventory');
