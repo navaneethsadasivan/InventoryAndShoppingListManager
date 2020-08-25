@@ -5,10 +5,10 @@ use App\Model\Inventory;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * Class UserInventory
+ * Class UserInventoryController
  * @package App\Http\Controllers
  */
-class UserInventory extends Controller
+class UserInventoryController extends Controller
 {
     public static function getUserInventory()
     {

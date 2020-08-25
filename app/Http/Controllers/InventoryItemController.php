@@ -9,18 +9,29 @@ use App\Model\InventoryItem;
  */
 class InventoryItemController extends Controller
 {
+    /**
+     * @return array
+     */
     public static function show()
     {
         $item = new InventoryItem();
         return $item->getData();
     }
 
+    /**
+     * @param int $item
+     * @return array
+     */
     public static function searchItem($item)
     {
         $inventory = new InventoryItem();
         return $inventory->getSearchData($item);
     }
 
+    /**
+     * @param object $item
+     * @return string
+     */
     public static function addItem($item)
     {
         $inventory = new InventoryItem();

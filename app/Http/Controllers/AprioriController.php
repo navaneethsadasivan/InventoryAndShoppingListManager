@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Auth;
  */
 class AprioriController extends Controller
 {
+    /**
+     * @return array
+     */
     public static function show()
     {
         $user = Auth::user();

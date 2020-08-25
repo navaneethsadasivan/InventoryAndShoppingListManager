@@ -9,6 +9,10 @@ use App\Model\ShoppingList;
  */
 class ShoppingListController extends Controller
 {
+    /**
+     * @param array $userDetails
+     * @return array
+     */
     public static function show($userDetails)
     {
         $userId = $userDetails['id'];
@@ -16,6 +20,11 @@ class ShoppingListController extends Controller
         return $list->showList();
     }
 
+    /**
+     * @param object $data
+     * @param array $userDetails
+     * @return string[]
+     */
     public static function getHistoryData($data, $userDetails)
     {
         $userId = $userDetails['id'];
