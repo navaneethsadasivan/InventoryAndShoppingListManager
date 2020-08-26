@@ -94,3 +94,7 @@ Route::post(
 Route::post(
     '/postRemoveItemUserInventory', 'AjaxController@postRemoveItem'
 )->name('postRemoveItemUserInventory');
+
+Route::get(
+    '/getPrevBoughtItemUser', 'AjaxController@getPreviousItem'
+)->name('getPreviouslyBoughtItemUser');

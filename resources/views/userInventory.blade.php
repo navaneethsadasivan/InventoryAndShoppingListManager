@@ -37,7 +37,7 @@
                 padding: 5px;
                 margin: 5px;
                 background-color: #a1cbef;
-                width: 25%;
+                width: 350px;
             }
             .items {
                 width: 100%;
@@ -70,7 +70,15 @@
                     </div>
                 </div>
             @endif
-            <div class="items d-flex justify-content-around flex-wrap">
+            <div class="d-flex justify-content-around">
+                <div class="col-8">
+                    <h3>Current Inventory</h3>
+                    <div class="items d-flex justify-content-start flex-wrap"></div>
+                </div>
+                <div class="col-4">
+                    <h3>Previously Bought Items</h3>
+                    <div class="prevItems d-flex justify-content-start flex-wrap"></div>
+                </div>
             </div>
         @endsection
 
@@ -88,6 +96,14 @@
                         render()
                     }
                 })
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/getPrevBoughtItemUser',
+                    success: function (data) {
+                        renderPrevItems(data.prevItems)
+                    }
+                })
             }
 
             function render() {
@@ -97,13 +113,15 @@
                     $.each(itemList, function (index, itemData) {
                         $('.items').append(
                             '<div class="border-box">' +
-                                '<label>Name:  </label>' +
-                                itemData.itemDetails.name + '<br>'+
-                                '<label>Price:  </label>' +
+                                '<div class="d-flex">' +
+                                    '<label><strong>Name:</strong></label>' +
+                                    itemData.itemDetails.name + '<br>'+
+                                '</div>' +
+                                '<label><strong>Price:</strong></label>' +
                                 itemData.itemDetails.price + '<br>'+
-                                '<label>Category:  </label>' +
+                                '<label><strong>Category:</strong></label>' +
                                 itemData.itemDetails.type + '<br>'+
-                                '<label>Use By:  </label>' +
+                                '<label><strong>Use By:</strong></label>' +
                                 itemData.itemDetails.use_by + '<span> week(s) </span>'+ '<br>'+
                                 '<label><strong>Current Stock: </strong></label>' +
                                 '<div class="d-flex mx-2">' +
@@ -143,6 +161,32 @@
                         location.reload()
                     }
                 })
+            }
+
+            function renderPrevItems(items) {
+                console.log(items.length)
+                if (items.length === 0) {
+                    $('.prevItems').append(
+                        '<p>No previous items found</p>'
+                    )
+                } else {
+                    $('.prevItems').empty()
+                    $.each(items, function (index, itemData) {
+                        $('.prevItems').append(
+                            '<div class="border-box">' +
+                                '<div class="d-flex flex-wrap>"' +
+                                    '<label><strong>Name: </strong></label>' +
+                                    itemData[0].name + '<br>' +
+                                '</div>' +
+                                '<label><strong>Price:</strong></label>' +
+                                itemData[0].price + '<br>' +
+                                '<label><strong>Use By:</strong></label>' +
+                                itemData[0].use_by + '<span> week(s) </span>' + '<br>' +
+                                '<button class="btn btn-light" id="' + itemData[0].id + '" value="' + itemData[0].name + '"onclick="addItem(this.id)">Add Item</button>' +
+                            '</div>'
+                        )
+                    })
+                }
             }
         </script>
     </body>

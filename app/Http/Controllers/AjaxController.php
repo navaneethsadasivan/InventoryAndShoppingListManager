@@ -145,4 +145,12 @@ class AjaxController extends Controller
         }
         return $response;
     }
+
+    /**
+     * Connect to UserInventoryController to get previously bought item
+     */
+    public function getPreviousItem()
+    {
+        return response()->json(['prevItems' => UserInventoryController::getPrevItems()], 200);
+    }
 }
