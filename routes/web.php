@@ -36,7 +36,7 @@ Route::get('/search', function () {
 });
 
 Route::get('/inventory', function () {
-    return view ('userInventory');
+    return view ('userInventory')->with('user', Auth::check());
 });
 
 Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');

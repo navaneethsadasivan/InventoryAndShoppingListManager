@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
         <style>
             .top-right {
                 text-align: right;
@@ -42,6 +44,14 @@
             .items {
                 width: 100%;
             }
+
+            .modal {
+                padding-top: 100px;
+            }
+
+            .modal-header {
+                background-color: #2a9055;
+            }
         </style>
     </head>
     <body onload="getData()">
@@ -69,17 +79,44 @@
                         @endauth
                     </div>
                 </div>
+                @auth
+                    <div class="d-flex justify-content-end align-items-center">
+                        <button class="btn" data-toggle="modal" data-target=".modal">
+                            <i class="fas fa-plus d-flex"><p style="font-size: 1rem">Add new Item</p></i>
+                        </button>
+                    </div>
+
+                    <div class="d-flex justify-content-around mt-4">
+                        <div class="col-8">
+                            <h3>Current Inventory</h3>
+                            <div class="items d-flex justify-content-start flex-wrap"></div>
+                        </div>
+                        <div class="col-4">
+                            <h3>Previously Bought Items</h3>
+                            <div class="prevItems d-flex justify-content-start flex-wrap"></div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3>Add Item</h3>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Hello</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <p>Footer</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endauth
             @endif
-            <div class="d-flex justify-content-around">
-                <div class="col-8">
-                    <h3>Current Inventory</h3>
-                    <div class="items d-flex justify-content-start flex-wrap"></div>
-                </div>
-                <div class="col-4">
-                    <h3>Previously Bought Items</h3>
-                    <div class="prevItems d-flex justify-content-start flex-wrap"></div>
-                </div>
-            </div>
         @endsection
 
         <script>
@@ -87,23 +124,24 @@
             let currentItemForChange = null;
 
             function getData() {
-                $.ajax({
-                    type: 'GET',
-                    url: '/getUserInventory',
-                    success: function (data) {
-                        itemList = data.items
-                        console.log(itemList)
-                        render()
-                    }
-                })
+                if ({{$user}}) {
+                    $.ajax({
+                        type: 'GET',
+                        url: '/getUserInventory',
+                        success: function (data) {
+                            itemList = data.items
+                            render()
+                        }
+                    })
 
-                $.ajax({
-                    type: 'GET',
-                    url: '/getPrevBoughtItemUser',
-                    success: function (data) {
-                        renderPrevItems(data.prevItems)
-                    }
-                })
+                    $.ajax({
+                        type: 'GET',
+                        url: '/getPrevBoughtItemUser',
+                        success: function (data) {
+                            renderPrevItems(data.prevItems)
+                        }
+                    })
+                }
             }
 
             function render() {
@@ -164,7 +202,6 @@
             }
 
             function renderPrevItems(items) {
-                console.log(items.length)
                 if (items.length === 0) {
                     $('.prevItems').append(
                         '<p>No previous items found</p>'
@@ -187,6 +224,10 @@
                         )
                     })
                 }
+            }
+
+            function renderModel() {
+                $('.modal').modal('show')
             }
         </script>
     </body>
