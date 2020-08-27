@@ -40,9 +40,13 @@
                 width: 25%;
             }
 
-            .shopping-list {
+            .listItems {
                 background-color: #fff8b3;
-                width: auto;
+                width:100%;
+            }
+
+            .quantity {
+                width: 20px;
             }
         </style>
     </head>
@@ -56,7 +60,7 @@
             @if (Route::has('login'))
                 <div class="header row">
                     <div class="page-title col-6">
-                        <p>Enter History</p>
+                        <p>Shopping List</p>
                     </div>
                     <div class="top-right links col-6">
                         @auth
@@ -76,13 +80,39 @@
             <div class="alert-notification"></div>
 
             @auth
-                <div class="d-flex row align-items-center justify-content-center p-5">
-                    <input id="searchElement" class="p-2 mr-2" type="text" placeholder="Type in the item">
-                    <button onclick="search()" class="btn btn-primary">Search</button>
+                <div class="d-flex justify-content-around">
+                    <div class="col-8">
+                        <div class="d-flex align-items-center justify-content-center p-5">
+                            <input id="searchElement" class="p-2 mr-2" type="text" placeholder="Type in the item">
+                            <button onclick="search()" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                        </div>
+                        <div class="searchRender d-flex justify-content-center flex-wrap"></div>
+                        <div class="d-flex align-items-center justify-content-center my-4">
+                            <div class="listItems">
+                                <div class="d-flex border">
+                                    <div class="col-2">
+                                        <p>No.</p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p>Name</p>
+                                    </div>
+                                    <div class="col-2">
+                                        <p>Quantity</p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p>Action</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-center my-4">
+                            <button id="final-submit" class="btn btn-success" onclick="finalSubmit()">Confirm</button>
+                        </div>
+                    </div>
+                    <div class="d-flex col-4 border-left">
+                        <h3>Expired Items</h3>
+                    </div>
                 </div>
-                <div id="searchRender" class="d-flex justify-content-center flex-wrap"></div>
-                <div id="listItems" class="shopping-list d-flex justify-content-center"></div>
-                <button id="final-submit" class="btn btn-success" onclick="finalSubmit()">Confirm</button>
             @else
                 <div class="alert alert-danger">
                     You must be logged in to access this feature
@@ -90,7 +120,8 @@
             @endauth
         @endsection
         <script>
-            let historyItems = []
+            let historyItems = {}
+            let addItems = 0
 
             function enter(listNumber, itemListNumber) {
                 let item = this.document.getElementById(listNumber).value;
@@ -120,16 +151,17 @@
             }
 
             function finalSubmit() {
-                $.ajax({
-                    headers : {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    type: 'POST',
-                    url: '/postHistory',
-                    data: JSON.stringify({0: historyItems}),
-                    success: function (data) {
-                    }
-                })
+                console.log(historyItems)
+                // $.ajax({
+                //     headers : {
+                //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                //     },
+                //     type: 'POST',
+                //     url: '/postHistory',
+                //     data: JSON.stringify({0: historyItems}),
+                //     success: function (data) {
+                //     }
+                // })
             }
 
             let item = null;
@@ -139,8 +171,6 @@
                 item = window.document.getElementById('searchElement').value;
 
                 if (item) {
-                    window.document.getElementById('searchElement').style.borderColor = 'black';
-                    window.document.getElementById('searchRender').innerHTML = '';
                     sendData()
                 } else {
                     window.document.getElementById('searchElement').style.borderColor = 'red';
@@ -159,42 +189,71 @@
                     },
                     type: 'POST',
                     url: '/postSearchItem',
-                    data: JSON.stringify(item),
+                    data: JSON.stringify([{
+                        'itemName': item,
+                        'type': 1
+                    }]),
                     success: function (data) {
                         if (data) {
-                            data['data'].forEach(render)
+                            console.log(data.data)
+                            $.each(data.data, function (index, item) {
+                                $('.searchRender').append(
+                                    '<div class="border-box">' +
+                                    '<div class="d-flex flex-wrap">' +
+                                        '<label><strong>Name:</strong></label>' +
+                                        item.name + '<br>'+
+                                    '</div>' +
+                                    '<label><strong>Price:</strong></label>' +
+                                    item.price + '<br>'+
+                                    '<label><strong>Use By:</strong></label>' +
+                                    item.use_by + '<span> week(s) </span>'+ '<br>'+
+                                    '<button class="btn btn-light" id="' + item.id + '" value="' + item.name + '"onclick="addItem(this.id, this.value)">Add Item</button>' +
+                                    '</div>'
+                                )
+                            })
                         }
                     }
                 })
             }
 
-            function render(item, index) {
-                $('#searchRender').append(
-                    '<div class="border-box">' +
-                        '<label><strong>Name: </strong></label>' +
-                        item.name + '<br>'+
-                        '<label><strong>Price: </strong></label>' +
-                        item.price + '<br>'+
-                        '<label><strong>Use By: </strong></label>' +
-                        item.use_by + '<span> week(s) </span>'+ '<br>'+
-                        '<button class="btn btn-light" id="' + item.id + '" value="' + item.name + '"onclick="addItem(this.id, this.value)">Add Item</button>' +
-                    '</div>'
-                )
-            }
-
             function addItem(id, name) {
-                $('#listItems').append(
-                    '<div class="flex-row"> ' +
-                        '<p>' + name + '</p>' +
+                addItems += 1
+                historyItems[id] = 1
+                console.log(historyItems)
+                $('.listItems').append(
+                    '<div class="d-flex border" id="' + id +'">' +
+                        '<div class="col-2">' +
+                            addItems +
+                        '</div>' +
+                        '<div class="col-4">' +
+                            name +
+                        '</div>' +
+                        '<div class="col-2">' +
+                            '<input class="quantity" value="' + historyItems[id] + '">' +
+                        '</div>' +
+                        '<div class="col-4">' +
+                            '<button class="btn btn-light" onclick="decreaseQuantity(' + id + ')"><i class="fas fa-minus"></i></button>' +
+                            '<button class="btn btn-light" onclick="increaseQuantity(' + id + ')"><i class="fas fa-plus"></i></button>' +
+                        '</div>' +
                     '</div>'
                 )
-                historyItems.push(id);
-                $('#searchRender').empty();
+                $('.searchRender').empty();
                 $('.alert-notification').empty().append(
                     '<div class="alert alert-success">Item Added</div>'
                 ).delay(3000).slideUp(200, function () {
                     $(this).alert('close')
                 })
+            }
+
+            function increaseQuantity(id) {
+                $('#' + id + ' .quantity').val(function (i, oldVal) {
+                    historyItems[id] += 1
+                    return ++oldVal
+                })
+            }
+
+            function decreaseQuantity(id) {
+
             }
         </script>
     </body>

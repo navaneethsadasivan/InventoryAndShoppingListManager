@@ -214,21 +214,25 @@ class InventoryItem
     }
 
     /**
+     * $params should contain the item name and the mode of search
+     *0: No type
+     *1: User inventory
+     *2: List creation
+     *
      * @param object $params
      * @param int $user
      * @return array
      */
     public function getSearchData($params, $user)
     {
+        $generalSearch = null;
         foreach ($params as $index => $requestDetails) {
+            $generalSearch = DB::select('select * from inventory_item where name like "%' . $requestDetails->itemName . '%"');
+
+            if ($generalSearch === null) {
+                $generalSearch = DB::select('select * from inventory_item where type like "%' . $requestDetails->itemName . '%"');
+            }
             if ($requestDetails->type === 1) {
-                $generalSearch = null;
-                $generalSearch = DB::select('select * from inventory_item where name like "%' . $requestDetails->itemName . '%"');
-
-                if ($generalSearch === null) {
-                    $generalSearch = DB::select('select * from inventory_item where type like "%' . $requestDetails->itemName . '%"');
-                }
-
                 $userInventory = new Inventory($user);
                 $userCurrentInventory = $userInventory->getUserInventory();
                 $userPrevBoughtItems = $userInventory->getPreviousBoughtItems();
@@ -244,10 +248,10 @@ class InventoryItem
                         }
                     }
                 }
-
-                return $generalSearch;
             }
         }
+
+        return $generalSearch;
     }
 
     /**

@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
-
         <style>
             .top-right {
                 text-align: right;
@@ -91,7 +89,7 @@
                             <h3>Current Inventory</h3>
                             <div class="items d-flex justify-content-start flex-wrap"></div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-4 border-left">
                             <h3>Previously Bought Items</h3>
                             <div class="prevItems d-flex justify-content-start flex-wrap"></div>
                         </div>
