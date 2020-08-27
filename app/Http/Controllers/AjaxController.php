@@ -68,7 +68,8 @@ class AjaxController extends Controller
     {
         $data = null;
         if (json_decode($request->getContent())) {
-            $data = InventoryItemController::searchItem(json_decode($request->getContent()));
+            $params =  json_decode($request->getContent());
+            $data = InventoryItemController::searchItem($params, Auth::user());
         }
 
         return response()->json(['data' => $data, 'status' => 200], 200);

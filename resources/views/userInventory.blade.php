@@ -107,13 +107,20 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <p>Hello</p>
+                                    <div class="d-flex row align-items-center justify-content-center p-5">
+                                        <input class="searchElement p-2 mr-2" type="text" placeholder="Type in the item">
+                                        <button onclick="search()" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                                    </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <p>Footer</p>
+                                    <div class="searchItems d-flex flex-wrap"></div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                @else
+                    <div class="alert alert-danger">
+                        You must be logged in to access this feature
                     </div>
                 @endauth
             @endif
@@ -121,7 +128,8 @@
 
         <script>
             let itemList = null
-            let currentItemForChange = null;
+            let previousBoughtItems = null
+            let searchItems = []
 
             function getData() {
                 if ({{$user}}) {
@@ -138,6 +146,7 @@
                         type: 'GET',
                         url: '/getPrevBoughtItemUser',
                         success: function (data) {
+                            previousBoughtItems = data.prevItems
                             renderPrevItems(data.prevItems)
                         }
                     })
@@ -226,8 +235,42 @@
                 }
             }
 
-            function renderModel() {
-                $('.modal').modal('show')
+            function search() {
+                let item = $('.searchElement').val()
+                $.ajax({
+                    headers : {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    type: 'POST',
+                    url: '/postSearchItem',
+                    data: JSON.stringify([{
+                        'itemName': item,
+                        'type': 1
+                    }]),
+                    success: function (data) {
+                        if (data) {
+                            $('.searchItems').empty()
+                            searchItems = data.data
+                            $.each(searchItems, function (index, itemData) {
+                                if (itemData) {
+                                    $('.searchItems').append(
+                                        '<div class="border-box">' +
+                                            '<div class="d-flex flex-wrap>"' +
+                                                '<label><strong>Name: </strong></label>' +
+                                                itemData.name + '<br>' +
+                                            '</div>' +
+                                            '<label><strong>Price:</strong></label>' +
+                                            itemData.price + '<br>' +
+                                            '<label><strong>Use By:</strong></label>' +
+                                            itemData.use_by + '<span> week(s) </span>' + '<br>' +
+                                            '<button class="btn btn-light" id="' + itemData.id + '" value="' + itemData.name + '"onclick="addItem(this.id)">Add Item</button>' +
+                                        '</div>'
+                                    )
+                                }
+                            })
+                        }
+                    }
+                })
             }
         </script>
     </body>

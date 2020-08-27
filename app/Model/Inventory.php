@@ -160,7 +160,7 @@ class Inventory
      */
     public function removeStock($itemId)
     {
-        $inventoryItem = DB::selectOne('select * from inventory_user where item_id = ' . $itemId);
+        $inventoryItem = DB::selectOne('select * from inventory_user where item_id = ' . $itemId . ' and user_id = ' . $this->getUser());
         if ($inventoryItem) {
             if ($inventoryItem->current_stock === 0) {
                 throw new \Exception('Cannot remove item with stock 0');
@@ -187,7 +187,7 @@ class Inventory
      */
     public function addStock($itemId)
     {
-        $inventoryItem = DB::selectOne('select * from inventory_user where item_id = ' . $itemId);
+        $inventoryItem = DB::selectOne('select * from inventory_user where item_id = ' . $itemId . ' and user_id = ' . $this->getUser());
         if ($inventoryItem) {
             DB::table('inventory_user')
                 ->where(
@@ -198,6 +198,15 @@ class Inventory
                 )->update(
                     [
                         'current_stock' => $inventoryItem->current_stock + 1
+                    ]
+                );
+        } else {
+            DB::table('inventory_user')
+                ->insert(
+                    [
+                        'user_id' => $this->getUser(),
+                        'item_id' => $itemId,
+                        'current_stock' => 1
                     ]
                 );
         }

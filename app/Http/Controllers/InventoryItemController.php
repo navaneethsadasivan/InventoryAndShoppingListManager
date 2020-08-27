@@ -19,13 +19,14 @@ class InventoryItemController extends Controller
     }
 
     /**
-     * @param int $item
+     * @param object $params
      * @return array
      */
-    public static function searchItem($item)
+    public static function searchItem($params, $userDetails)
     {
+        $user = $userDetails['id'];
         $inventory = new InventoryItem();
-        return $inventory->getSearchData($item);
+        return $inventory->getSearchData($params, $user);
     }
 
     /**

@@ -214,18 +214,40 @@ class InventoryItem
     }
 
     /**
-     * @param int $item
+     * @param object $params
+     * @param int $user
      * @return array
      */
-    public function getSearchData($item)
+    public function getSearchData($params, $user)
     {
-        $db = DB::select('select * from inventory_item where name like "%' . $item . '%"');
+        foreach ($params as $index => $requestDetails) {
+            if ($requestDetails->type === 1) {
+                $generalSearch = null;
+                $generalSearch = DB::select('select * from inventory_item where name like "%' . $requestDetails->itemName . '%"');
 
-        if ($db === null) {
-            $db = DB::select('select * from inventory_item where type like "%' . $item . '%"');
+                if ($generalSearch === null) {
+                    $generalSearch = DB::select('select * from inventory_item where type like "%' . $requestDetails->itemName . '%"');
+                }
+
+                $userInventory = new Inventory($user);
+                $userCurrentInventory = $userInventory->getUserInventory();
+                $userPrevBoughtItems = $userInventory->getPreviousBoughtItems();
+                foreach ($generalSearch as $generalIndex => $generalSearchItemDetails) {
+                    foreach ($userCurrentInventory as $currentInvIndex => $userCurrentInvDetails) {
+                        if ($generalSearchItemDetails->id === $userCurrentInvDetails['itemDetails']->id) {
+                            unset($generalSearch[$generalIndex]);
+                        }
+                    }
+                    foreach ($userPrevBoughtItems as $prevBoughtIndex => $prevBoughtDetails) {
+                        if ($generalSearchItemDetails->id === $prevBoughtDetails[0]->id) {
+                            unset($generalSearch[$generalIndex]);
+                        }
+                    }
+                }
+
+                return $generalSearch;
+            }
         }
-
-        return $db;
     }
 
     /**
