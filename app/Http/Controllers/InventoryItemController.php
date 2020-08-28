@@ -36,10 +36,11 @@ class InventoryItemController extends Controller
     public static function addItem($item)
     {
         $inventory = new InventoryItem();
-        $newItem = [];
-        foreach ($item as $itemData) {
-            $newItem[$itemData->name] = $itemData->value;
-        }
+        $newItem = [
+            'name' => $item->name,
+            'price' => $item->price,
+            'useBy' => $item->useBy
+        ];
 
         return $inventory->addItem($newItem);
     }
