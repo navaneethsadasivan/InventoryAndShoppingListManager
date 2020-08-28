@@ -90,10 +90,7 @@
                         <div class="d-flex align-items-center justify-content-center my-4">
                             <div class="listItems">
                                 <div class="d-flex border">
-                                    <div class="col-2">
-                                        <p>No.</p>
-                                    </div>
-                                    <div class="col-4">
+                                    <div class="col-6">
                                         <p>Name</p>
                                     </div>
                                     <div class="col-2">
@@ -102,6 +99,9 @@
                                     <div class="col-4">
                                         <p>Action</p>
                                     </div>
+                                </div>
+                                <div class="defaultList d-flex justify-content-around border">
+                                    <p>No items in list</p>
                                 </div>
                             </div>
                         </div>
@@ -195,7 +195,6 @@
                     }]),
                     success: function (data) {
                         if (data) {
-                            console.log(data.data)
                             $.each(data.data, function (index, item) {
                                 $('.searchRender').append(
                                     '<div class="border-box">' +
@@ -217,32 +216,37 @@
             }
 
             function addItem(id, name) {
-                addItems += 1
-                historyItems[id] = 1
-                console.log(historyItems)
-                $('.listItems').append(
-                    '<div class="d-flex border" id="' + id +'">' +
+                $('.defaultList').empty()
+
+                if (historyItems[id]) {
+                    $('#' + id + ' .quantity').val(function (i, oldVal) {
+                        historyItems[id] += 1
+                        return ++oldVal
+                    })
+                } else {
+                    addItems += 1
+                    historyItems[id] = 1
+                    $('.listItems').append(
+                        '<div class="d-flex border" id="' + id + '">' +
+                        '<div class="col-6">' +
+                        name +
+                        '</div>' +
                         '<div class="col-2">' +
-                            addItems +
+                        '<input class="quantity" value="' + historyItems[id] + '">' +
                         '</div>' +
                         '<div class="col-4">' +
-                            name +
+                        '<button class="btn btn-light" onclick="decreaseQuantity(' + id + ')"><i class="fas fa-minus"></i></button>' +
+                        '<button class="btn btn-light" onclick="increaseQuantity(' + id + ')"><i class="fas fa-plus"></i></button>' +
                         '</div>' +
-                        '<div class="col-2">' +
-                            '<input class="quantity" value="' + historyItems[id] + '">' +
-                        '</div>' +
-                        '<div class="col-4">' +
-                            '<button class="btn btn-light" onclick="decreaseQuantity(' + id + ')"><i class="fas fa-minus"></i></button>' +
-                            '<button class="btn btn-light" onclick="increaseQuantity(' + id + ')"><i class="fas fa-plus"></i></button>' +
-                        '</div>' +
-                    '</div>'
-                )
-                $('.searchRender').empty();
-                $('.alert-notification').empty().append(
-                    '<div class="alert alert-success">Item Added</div>'
-                ).delay(3000).slideUp(200, function () {
-                    $(this).alert('close')
-                })
+                        '</div>'
+                    )
+                    $('.searchRender').empty();
+                    $('.alert-notification').empty().append(
+                        '<div class="alert alert-success">Item Added</div>'
+                    ).delay(3000).slideUp(200, function () {
+                        $(this).alert('close')
+                    })
+                }
             }
 
             function increaseQuantity(id) {
@@ -253,7 +257,23 @@
             }
 
             function decreaseQuantity(id) {
-
+                historyItems[id] -= 1
+                $('#' + id + ' .quantity').val(function (i, oldVal) {
+                    if (oldVal != 1) {
+                        return --oldVal
+                    } else {
+                        if (historyItems[id] === 0) {
+                            delete historyItems[id]
+                            $('#' + id).remove()
+                            addItems -= 1
+                        }
+                        if (addItems === 0) {
+                            $('.defaultList').append(
+                                '<p>No items in list</p>'
+                            )
+                        }
+                    }
+                })
             }
         </script>
     </body>
