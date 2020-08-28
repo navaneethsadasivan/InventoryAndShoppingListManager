@@ -255,7 +255,7 @@ class InventoryItem
     }
 
     /**
-     * @param int $item
+     * @param array $item
      * @return string
      */
     public function addItem($item)
@@ -269,5 +269,27 @@ class InventoryItem
         );
 
         return 'Item Added';
+    }
+
+    /**
+     * @param array $updatedItem
+     * @return string
+     */
+    public function updateItem($updatedItem)
+    {
+        DB::table('inventory_item')
+            ->where(
+                [
+                    'id' => $updatedItem['id']
+                ]
+            )->update(
+                [
+                    'name' => $updatedItem['name'],
+                    'price' => $updatedItem['price'],
+                    'use_by' => $updatedItem['useBy']
+                ]
+            );
+
+        return 'Item Updated';
     }
 }

@@ -92,6 +92,22 @@ class AjaxController extends Controller
     }
 
     /**
+     * Connect to InventoryItemController to update an item
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function putUpdateItem(Request $request)
+    {
+        $response = null;
+        if (json_decode($request->getContent())) {
+            $response = InventoryItemController::updateItem(json_decode($request->getContent()));
+        }
+
+        return response()->json(['message' => $response], 200);
+    }
+
+    /**
      * Connect to ShoppingListController to save a new list to the database
      *
      * @param Request $request

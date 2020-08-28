@@ -77,6 +77,10 @@ Route::post(
     '/postAddItem', 'AjaxController@postAddNewItem'
 )->name('postAddItem');
 
+Route::put(
+    '/putUpdateItem', 'AjaxController@putUpdateItem'
+)->name('putUpdateItem');
+
 Auth::routes();
 
 Route::get(

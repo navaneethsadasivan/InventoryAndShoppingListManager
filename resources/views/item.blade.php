@@ -90,11 +90,12 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h3>Enter Item Details</h3>
+                            <h3></h3>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true" onclick="clear()">&times;</span>
                             </button>
                         </div>
+                        <div class="alert-notification"></div>
                         <div class="modal-body">
                             <div class="d-flex row p-5">
                                 <div class="d-flex p-2 col-12 justify-content-between">
@@ -112,9 +113,6 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-success" onclick="submit()">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -124,14 +122,21 @@
 
         <script>
             document.addEventListener('click', function (e) {
-                if (e.target.nodeName === 'SPAN' ||e.target.id === 'addItem') {
+                if (e.target.nodeName === 'SPAN' || e.target.id === 'addItem') {
+                    $('.modal-header h3').html('Enter Item Details')
                     $('.name').val('')
                     $('.price').val('')
                     $('.useBy').val('')
+                    $('.modal-footer').empty().append(
+                        '<button class="btn btn-success" onclick="submit()">' +
+                            '<i class="fas fa-paper-plane"></i>' +
+                        '</button>'
+                    )
                 }
             })
 
             let itemList = null
+            let itemToEdit = null
 
             function getData() {
                 $.ajax({
@@ -165,7 +170,7 @@
                                     '</div>' +
                                 '</div>' +
                                 '<div class="d-flex col-3">' +
-                                    '<button class="btn btn-light"><i class="fas fa-edit"></i></button>' +
+                                    '<button class="btn btn-light" id="' + itemData.id + '" onclick="editItem(this.id)"><i class="fas fa-edit"></i></button>' +
                                 '</div>' +
                             '</div>'
                         )
@@ -174,25 +179,82 @@
             }
 
             function submit() {
-                $.ajax({
-                    headers : {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    type: 'POST',
-                    url: '/postAddItem',
-                    data: JSON.stringify({
-                        'name': $('.name').val(),
-                        'price': $('.price').val(),
-                        'useBy': $('.useBy').val()
-                    }),
-                    success: function () {
-                        location.reload()
-                    }
-                })
+                let name = $('.name').val()
+                let price = $('.price').val()
+                let useBy = $('.useBy').val()
+
+                if (name && price && useBy) {
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        type: 'POST',
+                        url: '/postAddItem',
+                        data: JSON.stringify({
+                            'name': name,
+                            'price': price,
+                            'useBy': useBy
+                        }),
+                        success: function () {
+                            location.reload()
+                        }
+                    })
+                } else {
+                    $('.alert-notification').empty().append(
+                        '<div class="alert-danger">Enter item details</div>'
+                    ).delay(3000).slideUp(200, function () {
+                        $(this).alert('close')
+                    })
+                }
             }
 
-            function clear() {
-                console.log('I work')
+            function editItem(id) {
+                $.each(itemList, function (index, itemData) {
+                    if (itemData.id === Number.parseInt(id)) {
+                        itemToEdit = itemData
+                    }
+                })
+
+                $('.modal-header h3').html('Update Item')
+                $('.name').val(itemToEdit.name)
+                $('.price').val(itemToEdit.price)
+                $('.useBy').val(itemToEdit.use_by)
+                $('.modal-footer').empty().append(
+                    '<button class="btn btn-success"">' +
+                        '<i class="fas fa-check"></i>' +
+                    '</button>'
+                )
+                $('.modal-footer button').click(function () {
+                    let name = $('.name').val()
+                    let price = $('.price').val()
+                    let useBy = $('.useBy').val()
+
+                    if (name === itemToEdit.name && price === itemToEdit.price && useBy === itemToEdit.use_by) {
+                        $('.alert-notification').empty().append(
+                            '<div class="alert-danger">No changes made</div>'
+                        ).delay(3000).slideUp(200, function () {
+                            $(this).alert('close')
+                        })
+                    } else {
+                        $.ajax({
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            type: 'PUT',
+                            url: '/putUpdateItem',
+                            data: JSON.stringify({
+                                'id': itemToEdit.id,
+                                'name': name,
+                                'price': price,
+                                'useBy': useBy
+                            }),
+                            success: function () {
+                                location.reload()
+                            }
+                        })
+                    }
+                })
+                $('.modal').modal('show')
             }
         </script>
     </body>
