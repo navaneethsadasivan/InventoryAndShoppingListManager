@@ -48,6 +48,10 @@
             .quantity {
                 width: 20px;
             }
+
+            .finalPrice, .price {
+                width:50px;
+            }
         </style>
     </head>
     <body>
@@ -96,7 +100,10 @@
                                     <div class="col-2">
                                         <p>Quantity</p>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-2">
+                                        <p>Price</p>
+                                    </div>
+                                    <div class="col-2">
                                         <p>Action</p>
                                     </div>
                                 </div>
@@ -106,6 +113,10 @@
                             </div>
                         </div>
                         <div class="d-flex align-items-center justify-content-center my-4">
+                            <div class="d-flex justify-content-end p-2">
+                                <span>Total Price(&#163): </span>
+                                <input class="finalPrice" value="0">
+                            </div>
                             <button id="final-submit" class="btn btn-success" onclick="finalSubmit()">Confirm</button>
                         </div>
                     </div>
@@ -122,6 +133,7 @@
         <script>
             let historyItems = {}
             let addItems = 0
+            let totalPrice = 0
 
             function enter(listNumber, itemListNumber) {
                 let item = this.document.getElementById(listNumber).value;
@@ -206,7 +218,7 @@
                                     item.price + '<br>'+
                                     '<label><strong>Use By:</strong></label>' +
                                     item.use_by + '<span> week(s) </span>'+ '<br>'+
-                                    '<button class="btn btn-light" id="' + item.id + '" value="' + item.name + '"onclick="addItem(this.id, this.value)">Add Item</button>' +
+                                    '<button class="btn btn-light" id="' + item.id + '" value="' + item.name + '"onclick="addItem(this.id, this.value,' + item.price + ')">Add Item</button>' +
                                     '</div>'
                                 )
                             })
@@ -215,7 +227,7 @@
                 })
             }
 
-            function addItem(id, name) {
+            function addItem(id, name, price) {
                 $('.defaultList').empty()
 
                 if (historyItems[id]) {
@@ -226,18 +238,23 @@
                 } else {
                     addItems += 1
                     historyItems[id] = 1
+                    totalPrice += Number.parseFloat(price).toFixed(2)
+                    $('.finalPrice').val(totalPrice)
                     $('.listItems').append(
                         '<div class="d-flex border" id="' + id + '">' +
-                        '<div class="col-6">' +
-                        name +
-                        '</div>' +
-                        '<div class="col-2">' +
-                        '<input class="quantity" value="' + historyItems[id] + '">' +
-                        '</div>' +
-                        '<div class="col-4">' +
-                        '<button class="btn btn-light" onclick="decreaseQuantity(' + id + ')"><i class="fas fa-minus"></i></button>' +
-                        '<button class="btn btn-light" onclick="increaseQuantity(' + id + ')"><i class="fas fa-plus"></i></button>' +
-                        '</div>' +
+                            '<div class="col-6">' +
+                                name +
+                            '</div>' +
+                            '<div class="col-2">' +
+                                '<input class="quantity" value="' + historyItems[id] + '">' +
+                            '</div>' +
+                            '<div class="col-2">' +
+                                '<input class="price" value="' + price + '">' +
+                            '</div>' +
+                            '<div class="col-2">' +
+                                '<button class="btn btn-light" onclick="decreaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-minus"></i></button>' +
+                                '<button class="btn btn-light" onclick="increaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-plus"></i></button>' +
+                            '</div>' +
                         '</div>'
                     )
                     $('.searchRender').empty();
@@ -249,31 +266,45 @@
                 }
             }
 
-            function increaseQuantity(id) {
+            function increaseQuantity(id, price) {
                 $('#' + id + ' .quantity').val(function (i, oldVal) {
                     historyItems[id] += 1
+                    $('#' + id + ' .price').val(function () {
+                        totalPrice += Number.parseFloat(price).toFixed(2)
+                        return historyItems[id]*price
+                    })
                     return ++oldVal
                 })
+                console.log(totalPrice)
+                $('.finalPrice').val(totalPrice)
             }
 
-            function decreaseQuantity(id) {
+            function decreaseQuantity(id, price) {
                 historyItems[id] -= 1
                 $('#' + id + ' .quantity').val(function (i, oldVal) {
                     if (oldVal != 1) {
+                        $('#' + id + ' .price').val(function () {
+                            totalPrice -= Number.parseFloat(price).toFixed(2)
+                            return historyItems[id]*price
+                        })
                         return --oldVal
                     } else {
                         if (historyItems[id] === 0) {
                             delete historyItems[id]
                             $('#' + id).remove()
                             addItems -= 1
+                            totalPrice -= Number.parseFloat(price).toFixed(2)
                         }
                         if (addItems === 0) {
                             $('.defaultList').append(
                                 '<p>No items in list</p>'
                             )
+                            $('.finalPrice').val(totalPrice)
                         }
                     }
                 })
+                console.log(totalPrice)
+                $('.finalPrice').val(totalPrice)
             }
         </script>
     </body>
