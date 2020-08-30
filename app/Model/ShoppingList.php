@@ -323,7 +323,7 @@ class ShoppingList
     {
         $returnData = [];
         $historyLists = DB::select(
-            'select * from shopping_list where user_id = ' . $this->getUserIdWithoutFormat()
+            'select * from shopping_list where user_id = ' . $this->getUserIdWithoutFormat() . ' ORDER BY id DESC'
         );
 
         foreach ($historyLists as $index => $historyList) {

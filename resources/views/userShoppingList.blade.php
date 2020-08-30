@@ -44,7 +44,7 @@
                 color: #2a9055;
             }
 
-            .listItems {
+            .listItems, .historyListItems {
                 background-color: #fff8b3;
                 width:100%;
             }
@@ -170,6 +170,12 @@
             @endauth
         @endsection
         <script>
+            document.addEventListener('click', function (e) {
+                if (e.target.nodeName === 'SPAN') {
+                    $('.listHistory').empty()
+                }
+            })
+
             let historyItems = {}
             let addItems = 0
             let totalPrice = 0
@@ -365,11 +371,11 @@
             }
 
             function getHistory() {
+                $('.listHistory').empty()
                 $.ajax({
                     type: 'GET',
                     url: '/getHistory',
                     success: function (data) {
-                        console.log(data.history)
                         $.each(data.history, function (index, listHistoryDetails) {
                             $('.listHistory').append(
                                 '<div class="p-4 d-flex border-bottom">' +
@@ -388,13 +394,13 @@
                                                     '<label><strong>Total Items:</strong></label>' + listHistoryDetails.totalItems +
                                                 '</div>' +
                                                 '<div class="col-12">' +
-                                                    '<label><strong>Total Price:</strong></label>' + listHistoryDetails.totalPrice +
+                                                    '<label><strong>Total Price(&#163):</strong></label>' + listHistoryDetails.totalPrice +
                                                 '</div>' +
                                             '</div>' +
                                         '</div>' +
                                     '</div>' +
                                     '<div class="d-flex">' +
-                                        '<div class="listItems" id="' + listHistoryDetails.listId + '">' +
+                                        '<div class="historyListItems" id="' + listHistoryDetails.listId + '">' +
                                             '<div class="d-flex border">' +
                                                 '<div class="col-6">' +
                                                     '<p>Name</p>' +
