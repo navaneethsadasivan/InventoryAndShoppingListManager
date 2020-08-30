@@ -40,6 +40,10 @@
                 width: 25%;
             }
 
+            .history>i, .history>strong {
+                color: #2a9055;
+            }
+
             .listItems {
                 background-color: #fff8b3;
                 width:100%;
@@ -52,9 +56,19 @@
             .finalPrice, .price {
                 width:50px;
             }
+
+            .modal {
+                padding-top: 100px;
+            }
+            .modal-header {
+                background-color: #2a9055;
+            }
+            .modal-header>h3 {
+                color: white;
+            }
         </style>
     </head>
-    <body>
+    <body onload="defaultPage()">
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -84,6 +98,12 @@
             <div class="alert-notification"></div>
 
             @auth
+                <div class="d-flex mb-3 justify-content-end">
+                    <button class="btn history" onclick="getHistory()">
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        <strong>View History</strong>
+                    </button>
+                </div>
                 <div class="d-flex justify-content-around">
                     <div class="col-8">
                         <div class="d-flex align-items-center justify-content-center p-5">
@@ -124,6 +144,38 @@
                         <h3>Expired Items</h3>
                     </div>
                 </div>
+
+                <div class="modal fade" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3>Shopping History</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true" onclick="clear()">&times;</span>
+                                </button>
+                            </div>
+                            <div class="alert-notification"></div>
+                            <div class="modal-body">
+                                <div class="d-flex row p-5">
+                                    <div class="d-flex p-2 col-12 justify-content-between">
+                                        <label><strong>Name</strong></label>
+                                        <input type="text" class="name" placeholder="Enter item name">
+                                    </div>
+                                    <div class="d-flex p-2 col-12 justify-content-between">
+                                        <label><strong>Price</strong></label>
+                                        <input type="text" class="price" placeholder="Enter item price">
+                                    </div>
+                                    <div class="d-flex p-2 col-12 justify-content-between">
+                                        <label><strong>Use By (in weeks)</strong></label>
+                                        <input type="text" class="useBy" placeholder="Enter item use by">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             @else
                 <div class="alert alert-danger">
                     You must be logged in to access this feature
@@ -134,6 +186,11 @@
             let historyItems = {}
             let addItems = 0
             let totalPrice = 0
+
+            function defaultPage() {
+                $('#searchElement').val('')
+                $('.finalPrice').val(0)
+            }
 
             function enter(listNumber, itemListNumber) {
                 let item = this.document.getElementById(listNumber).value;
@@ -183,6 +240,7 @@
                 item = window.document.getElementById('searchElement').value;
 
                 if (item) {
+                    $('.searchRender').empty()
                     sendData()
                 } else {
                     window.document.getElementById('searchElement').style.borderColor = 'red';
@@ -203,10 +261,11 @@
                     url: '/postSearchItem',
                     data: JSON.stringify([{
                         'itemName': item,
-                        'type': 1
+                        'addedItems': historyItems,
+                        'type': 2
                     }]),
                     success: function (data) {
-                        if (data) {
+                        if (data.data.length !== 0) {
                             $.each(data.data, function (index, item) {
                                 $('.searchRender').append(
                                     '<div class="border-box">' +
@@ -222,6 +281,10 @@
                                     '</div>'
                                 )
                             })
+                        } else {
+                            $('.searchRender').append(
+                                '<p>No items found in database/ All similar items are shown/added</p>'
+                            )
                         }
                     }
                 })
@@ -229,53 +292,49 @@
 
             function addItem(id, name, price) {
                 $('.defaultList').empty()
-
-                if (historyItems[id]) {
-                    $('#' + id + ' .quantity').val(function (i, oldVal) {
-                        historyItems[id] += 1
-                        return ++oldVal
-                    })
-                } else {
-                    addItems += 1
-                    historyItems[id] = 1
-                    totalPrice += Number.parseFloat(price).toFixed(2)
-                    $('.finalPrice').val(totalPrice)
-                    $('.listItems').append(
-                        '<div class="d-flex border" id="' + id + '">' +
-                            '<div class="col-6">' +
-                                name +
-                            '</div>' +
-                            '<div class="col-2">' +
-                                '<input class="quantity" value="' + historyItems[id] + '">' +
-                            '</div>' +
-                            '<div class="col-2">' +
-                                '<input class="price" value="' + price + '">' +
-                            '</div>' +
-                            '<div class="col-2">' +
-                                '<button class="btn btn-light" onclick="decreaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-minus"></i></button>' +
-                                '<button class="btn btn-light" onclick="increaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-plus"></i></button>' +
-                            '</div>' +
-                        '</div>'
-                    )
-                    $('.searchRender').empty();
-                    $('.alert-notification').empty().append(
-                        '<div class="alert alert-success">Item Added</div>'
-                    ).delay(3000).slideUp(200, function () {
-                        $(this).alert('close')
-                    })
+                if (totalPrice === '0.00') {
+                    totalPrice = 0
                 }
+
+                addItems += 1
+                historyItems[id] = 1
+                totalPrice += price
+
+                $('.finalPrice').val(totalPrice)
+                $('.listItems').append(
+                    '<div class="d-flex border" id="' + id + '">' +
+                        '<div class="col-6">' +
+                            name +
+                        '</div>' +
+                        '<div class="col-2">' +
+                            '<input class="quantity" value="' + historyItems[id] + '">' +
+                        '</div>' +
+                        '<div class="col-2">' +
+                            '<input class="price" value="' + price + '">' +
+                        '</div>' +
+                        '<div class="col-2">' +
+                            '<button class="btn btn-light" onclick="decreaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-minus"></i></button>' +
+                            '<button class="btn btn-light" onclick="increaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-plus"></i></button>' +
+                        '</div>' +
+                    '</div>'
+                )
+                $('.searchRender').empty();
+                $('.alert-notification').empty().append(
+                    '<div class="alert alert-success">Item Added</div>'
+                ).delay(3000).slideUp(200, function () {
+                    $(this).alert('close')
+                })
             }
 
             function increaseQuantity(id, price) {
                 $('#' + id + ' .quantity').val(function (i, oldVal) {
                     historyItems[id] += 1
                     $('#' + id + ' .price').val(function () {
-                        totalPrice += Number.parseFloat(price).toFixed(2)
+                        totalPrice += price
                         return historyItems[id]*price
                     })
                     return ++oldVal
                 })
-                console.log(totalPrice)
                 $('.finalPrice').val(totalPrice)
             }
 
@@ -284,7 +343,7 @@
                 $('#' + id + ' .quantity').val(function (i, oldVal) {
                     if (oldVal != 1) {
                         $('#' + id + ' .price').val(function () {
-                            totalPrice -= Number.parseFloat(price).toFixed(2)
+                            totalPrice = (totalPrice - price).toFixed(2)
                             return historyItems[id]*price
                         })
                         return --oldVal
@@ -293,18 +352,20 @@
                             delete historyItems[id]
                             $('#' + id).remove()
                             addItems -= 1
-                            totalPrice -= Number.parseFloat(price).toFixed(2)
+                            totalPrice = (totalPrice - price).toFixed(2)
                         }
                         if (addItems === 0) {
                             $('.defaultList').append(
                                 '<p>No items in list</p>'
                             )
-                            $('.finalPrice').val(totalPrice)
                         }
                     }
                 })
-                console.log(totalPrice)
                 $('.finalPrice').val(totalPrice)
+            }
+
+            function getHistory() {
+                $('.modal').modal('show')
             }
         </script>
     </body>

@@ -20,6 +20,7 @@ class InventoryItemController extends Controller
 
     /**
      * @param object $params
+     * @param array $userDetails
      * @return array
      */
     public static function searchItem($params, $userDetails)
