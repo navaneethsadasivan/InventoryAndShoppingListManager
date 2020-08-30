@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Model\Inventory;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -48,14 +49,19 @@ class AjaxController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function postHistory(Request $request)
+    public function postShoppingList(Request $request)
     {
         $data = null;
         if (json_decode($request->getContent())) {
-            $data = ShoppingListController::getHistoryData(json_decode($request->getContent()), Auth::user());
+            $data = ShoppingListController::postShoppingList(json_decode($request->getContent()), Auth::user());
         }
 
         return response()->json(['message' => $data], 200);
+    }
+
+    public function getHistory()
+    {
+        return response()->json(['history' => ShoppingListController::getShoppingListHistory(Auth::user())]);
     }
 
     /**
@@ -117,7 +123,7 @@ class AjaxController extends Controller
     {
         $response = null;
         if (json_decode($request->getContent())) {
-            $response = ShoppingListController::getHistoryData(json_decode($request->getContent()), Auth::user());
+            $response = ShoppingListController::postShoppingList(json_decode($request->getContent()), Auth::user());
         }
 
         return response()->json(['message' => $response], 200);
@@ -137,7 +143,8 @@ class AjaxController extends Controller
      * Connect to UserInventoryController to add to stock of a single item
      *
      * @param Request $request
-     * @return |null
+     * @return mixed|null
+     * @throws Exception
      */
     public function postAddItem(Request $request)
     {

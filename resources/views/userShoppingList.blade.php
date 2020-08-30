@@ -156,20 +156,7 @@
                             </div>
                             <div class="alert-notification"></div>
                             <div class="modal-body">
-                                <div class="d-flex row p-5">
-                                    <div class="d-flex p-2 col-12 justify-content-between">
-                                        <label><strong>Name</strong></label>
-                                        <input type="text" class="name" placeholder="Enter item name">
-                                    </div>
-                                    <div class="d-flex p-2 col-12 justify-content-between">
-                                        <label><strong>Price</strong></label>
-                                        <input type="text" class="price" placeholder="Enter item price">
-                                    </div>
-                                    <div class="d-flex p-2 col-12 justify-content-between">
-                                        <label><strong>Use By (in weeks)</strong></label>
-                                        <input type="text" class="useBy" placeholder="Enter item use by">
-                                    </div>
-                                </div>
+                                <div class="listHistory d-flex flex-wrap"></div>
                             </div>
                             <div class="modal-footer">
                             </div>
@@ -221,16 +208,29 @@
 
             function finalSubmit() {
                 console.log(historyItems)
-                // $.ajax({
-                //     headers : {
-                //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                //     },
-                //     type: 'POST',
-                //     url: '/postHistory',
-                //     data: JSON.stringify({0: historyItems}),
-                //     success: function (data) {
-                //     }
-                // })
+                $.ajax({
+                    headers : {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    type: 'POST',
+                    url: '/postShoppingList',
+                    data: JSON.stringify({0: historyItems}),
+                    success: function (data) {
+                        $('.finalPrice').val(0)
+                        $('#searchElement').val('')
+                        $.each(historyItems, function (id, quantity) {
+                            $('#' + id).remove()
+                        })
+                        $('.defaultList').empty().append(
+                            '<p>No items in list</p>'
+                        )
+                        $('.alert-notification').append(
+                            '<div class="alert alert-success">List Saved</div>'
+                        ).delay(3000).slideUp(200, function () {
+                            $(this).alert('close')
+                        })
+                    }
+                })
             }
 
             let item = null;
@@ -365,6 +365,13 @@
             }
 
             function getHistory() {
+                $.ajax({
+                    type: 'GET',
+                    url: '/getHistory',
+                    success: function (data) {
+                        console.log(data.history)
+                    }
+                })
                 $('.modal').modal('show')
             }
         </script>

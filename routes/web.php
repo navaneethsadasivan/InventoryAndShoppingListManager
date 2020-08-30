@@ -23,12 +23,12 @@ Route::get('/item', function () {
     return view('item');
 });
 
-Route::get('/list', function () {
-   return view('shoppingList');
+Route::get('/generate', function () {
+   return view('generateShoppingList');
 });
 
-Route::get('/history', function () {
-    return view('history');
+Route::get('/list', function () {
+    return view('userShoppingList');
 });
 
 Route::get('/search', function () {
@@ -62,8 +62,12 @@ Route::get(
 )->name('getApriori');
 
 Route::post(
-    '/postHistory', 'AjaxController@postHistory'
-)->name('postHistory');
+    '/postShoppingList', 'AjaxController@postShoppingList'
+)->name('postShoppingList');
+
+Route::get(
+    '/getHistory', 'AjaxController@getHistory'
+)->name('getHistory');
 
 Route::post(
     '/postNewList', 'AjaxController@postNewList'

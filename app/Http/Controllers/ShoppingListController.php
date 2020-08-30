@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\ShoppingList;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 /**
  * Class ShoppingListController
@@ -22,13 +23,23 @@ class ShoppingListController extends Controller
 
     /**
      * @param object $data
-     * @param array $userDetails
+     * @param Authenticatable $userDetails
      * @return string[]
      */
-    public static function getHistoryData($data, $userDetails)
+    public static function postShoppingList($data, $userDetails)
     {
         $userId = $userDetails['id'];
         $shoppingList = new ShoppingList($userId);
         return $shoppingList->saveHistory($data);
+    }
+
+    /**
+     * @param Authenticatable $userDetails
+     */
+    public static function getShoppingListHistory(Authenticatable $userDetails)
+    {
+        $userId = $userDetails['id'];
+        $shoppingList = new ShoppingList($userId);
+        return $shoppingList->getHistory();
     }
 }

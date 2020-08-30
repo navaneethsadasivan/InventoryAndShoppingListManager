@@ -157,12 +157,14 @@ class ShoppingList
     {
         $userInventory = new Inventory($this->getUserIdWithoutFormat());
         foreach ($previousLists as $index => $prevShoppingList) {
+            $totalItems = 0;
             $totalPrice = 0.00;
             $listId = $this->generateListId();
 
-            foreach ($prevShoppingList as $item) {
+            foreach ($prevShoppingList as $item => $quantity) {
+                $totalItems += $quantity;
                 $itemPrice = DB::selectOne('select price from inventory_item where id = ' . $item);
-                $totalPrice += $itemPrice->price;
+                $totalPrice += $itemPrice->price * $quantity;
             }
 
             DB::table('shopping_list')->insert(
@@ -170,17 +172,17 @@ class ShoppingList
                     'list_id' => $listId,
                     'user_id' => $this->getUserIdWithoutFormat(),
                     'created_at' => date('Y-m-d H:i:s'),
-                    'total_items' => count($prevShoppingList),
+                    'total_items' => $totalItems,
                     'total_price' => $totalPrice
                 ]
             );
 
-            foreach ($prevShoppingList as $item) {
+            foreach ($prevShoppingList as $item => $quantity) {
                 DB::table('shopping_list_items')->insert(
                     [
                         'shopping_list_id' => $listId,
                         'item_id' => $item,
-                        'quantity' => 1
+                        'quantity' => $quantity
                     ]
                 );
 
@@ -312,5 +314,31 @@ class ShoppingList
         }
 
         return $expiringItems;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHistory()
+    {
+        $returnData = [];
+        $historyLists = DB::select(
+            'select * from shopping_list where user_id = ' . $this->getUserIdWithoutFormat()
+        );
+
+        foreach ($historyLists as $index => $historyList) {
+            $items = DB::select(
+                'select * from shopping_list_items where shopping_list_id = "' . $historyList->list_id . '"'
+            );
+            $returnData[] = [
+                'listId' => $historyList->list_id,
+                'totalPrice' => $historyList->total_price,
+                'totalItems' => $historyList->total_items,
+                'createdAt' => $historyList->created_at,
+                'items' => $items
+            ];
+        }
+
+        return $returnData;
     }
 }
