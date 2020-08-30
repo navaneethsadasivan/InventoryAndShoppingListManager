@@ -53,32 +53,6 @@ class InventoryItem
     protected $usage;
 
     /**
-     * InventoryItem constructor.
-     * @param null|int $id
-     */
-    public function __construct($id = null)
-    {
-        if ($id === null) {
-            return true;
-        }
-
-        $data = DB::selectOne('select * from inventory_item where id = ' . $id);
-
-        if ($data) {
-            $this->setName($data->name);
-            $this->setDescription($data->description);
-            $this->setPrice($data->price);
-            $this->setQuantity(2);
-            $this->setType($data->type);
-            $this->setUsage($data->use_by);
-        }
-
-        return [
-            'item' => $this->asArray()
-        ];
-    }
-
-    /**
      * @return int
      */
     public function getQuantity()

@@ -11,6 +11,25 @@ use Illuminate\Support\Facades\DB;
 class Inventory
 {
     /**
+     * This is a list of all the different sections for the inventory. E.g: Kitchen, Bathroom, Pantry, etc
+     *
+     * @var string[]
+     */
+    private $defaultSections = [
+        'Bakery',
+        'Breakfast and cereal',
+        'Sauce',
+        'Sweets',
+        'Frozen food',
+        'Drinks',
+        'Milk, butter and eggs',
+        'Vegetables',
+        'Meat',
+        'Cans and Packets',
+        'Cooking Ingredients'
+    ];
+
+    /**
      * @var InventoryItem[]
      */
     protected $inventoryItems;
@@ -21,9 +40,7 @@ class Inventory
     protected $totalCount;
 
     /**
-     * This is a list of all the different sections for the inventory. E.g: Kitchen, Bathroom, Pantry, etc
-     *
-     * @var array
+     * @var string
      */
     protected $sections;
 
@@ -80,7 +97,7 @@ class Inventory
     }
 
     /**
-     * @return array
+     * @return string
      */
     public function getSections()
     {
@@ -88,11 +105,16 @@ class Inventory
     }
 
     /**
-     * @param array $sections
+     * @param $section
+     * @return string
      */
-    public function setSections(array $sections)
+    public function setSections($section)
     {
-        $this->sections = $sections;
+        if (in_array($section, $this->defaultSections)) {
+            $this->sections = $section;
+        } else {
+            throw new \Exception($section . ' is not a valid section');
+        }
     }
 
     /**
