@@ -146,7 +146,7 @@
                 </div>
 
                 <div class="modal fade" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
+                    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h3>Shopping History</h3>
@@ -370,6 +370,58 @@
                     url: '/getHistory',
                     success: function (data) {
                         console.log(data.history)
+                        $.each(data.history, function (index, listHistoryDetails) {
+                            $('.listHistory').append(
+                                '<div class="p-4 d-flex border-bottom">' +
+                                    '<div class="d-flex">' +
+                                        '<div class="container">' +
+                                            '<div class="row">' +
+                                                '<div class="col-12">' +
+                                                    '<h3>' + listHistoryDetails.listId + '</h3>' +
+                                                '</div>' +
+                                            '</div>' +
+                                            '<div class="row">' +
+                                                '<div class="col-12">' +
+                                                    '<label><strong>Date Created:</strong></label>' + listHistoryDetails.createdAt +
+                                                '</div>' +
+                                                '<div class="col-12">' +
+                                                    '<label><strong>Total Items:</strong></label>' + listHistoryDetails.totalItems +
+                                                '</div>' +
+                                                '<div class="col-12">' +
+                                                    '<label><strong>Total Price:</strong></label>' + listHistoryDetails.totalPrice +
+                                                '</div>' +
+                                            '</div>' +
+                                        '</div>' +
+                                    '</div>' +
+                                    '<div class="d-flex">' +
+                                        '<div class="listItems" id="' + listHistoryDetails.listId + '">' +
+                                            '<div class="d-flex border">' +
+                                                '<div class="col-6">' +
+                                                    '<p>Name</p>' +
+                                                '</div>' +
+                                                '<div class="col-2">' +
+                                                    '<p>Quantity</p>' +
+                                                '</div>' +
+                                            '</div>' +
+                                            '<div class="historyRender"></div>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>'
+                            )
+
+                            $.each(listHistoryDetails.items, function (itemName, itemQuantity) {
+                                $('#' + listHistoryDetails.listId + ' .historyRender').append(
+                                    '<div class="d-flex border">' +
+                                        '<div class="col-6">' +
+                                            itemName +
+                                        '</div>' +
+                                        '<div class="col-2">' +
+                                            itemQuantity +
+                                        '</div>' +
+                                    '</div>'
+                                )
+                            })
+                        })
                     }
                 })
                 $('.modal').modal('show')

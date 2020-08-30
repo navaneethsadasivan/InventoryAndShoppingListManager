@@ -327,15 +327,25 @@ class ShoppingList
         );
 
         foreach ($historyLists as $index => $historyList) {
+            $historyItemName = [];
+
             $items = DB::select(
                 'select * from shopping_list_items where shopping_list_id = "' . $historyList->list_id . '"'
             );
+
+            foreach ($items as $listItemsIndex => $listItem) {
+                $itemDetails = DB::selectOne(
+                    'select name from inventory_item where id = ' . $listItem->item_id
+                );
+                $historyItemName[$itemDetails->name] = $listItem->quantity;
+            }
+
             $returnData[] = [
                 'listId' => $historyList->list_id,
                 'totalPrice' => $historyList->total_price,
                 'totalItems' => $historyList->total_items,
                 'createdAt' => $historyList->created_at,
-                'items' => $items
+                'items' => $historyItemName
             ];
         }
 
