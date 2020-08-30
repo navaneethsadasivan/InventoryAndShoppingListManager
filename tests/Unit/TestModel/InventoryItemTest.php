@@ -4,8 +4,15 @@ namespace Tests\Unit\TestModel;
 use App\Model\InventoryItem;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class InventoryItemTest
+ * @package Tests\Unit\TestModel
+ */
 class InventoryItemTest extends TestCase
 {
+    /**
+     * @var array
+     */
     protected $successTestData = [
         'quantity' => 2,
         'name' => 'Vanilla Cheesecake',
@@ -50,9 +57,14 @@ class InventoryItemTest extends TestCase
     public function testInventoryItemTypeGetterAndSetter()
     {
         $inventoryItem = new InventoryItem();
+        $this->expectException(\Exception::class);
         $inventoryItem->setType($this->successTestData['type']);
         $this->assertTrue($inventoryItem->getType() === $this->successTestData['type']);
         $this->assertFalse($inventoryItem->getType() === 'Not Bakery');
+
+        $inventoryItemFail = new InventoryItem();
+        $this->expectException(\Exception::class);
+        $inventoryItemFail->setType('Not a Type');
     }
 
     public function testInventoryItemPriceGetterAndSetter()

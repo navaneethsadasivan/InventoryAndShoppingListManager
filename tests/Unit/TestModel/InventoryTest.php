@@ -2,10 +2,14 @@
 namespace Tests\Unit\TestModel;
 
 use App\Model\Inventory;
+use App\Model\InventoryItem;
 use Tests\TestCase;
 
 class InventoryTest extends TestCase
 {
+    /**
+     * @var array
+     */
     protected $successData = [
         'user' => 1,
         'inventoryItem' => [
@@ -38,5 +42,27 @@ class InventoryTest extends TestCase
 
     public function testInventoryItemGetterAndSetter()
     {
+        $inventoryItem1 = new InventoryItem();
+        $inventoryItem1->setPrice($this->successData['inventoryItem']['item1']['Price']);
+        $inventoryItem1->setName($this->successData['inventoryItem']['item1']['Name']);
+        $inventoryItem1->setType($this->successData['inventoryItem']['item1']['Type']);
+        $inventoryItem1->setUsage($this->successData['inventoryItem']['item1']['Usage']);
+        $inventoryItem1->setQuantity($this->successData['inventoryItem']['item1']['Quantity']);
+        $inventoryItem1->setDescription($this->successData['inventoryItem']['item1']['Description']);
+
+        $inventoryItem2 = new InventoryItem();
+        $inventoryItem2->setPrice($this->successData['inventoryItem']['item1']['Price']);
+        $inventoryItem2->setName($this->successData['inventoryItem']['item1']['Name']);
+        $inventoryItem2->setType($this->successData['inventoryItem']['item1']['Type']);
+        $inventoryItem2->setUsage($this->successData['inventoryItem']['item1']['Usage']);
+        $inventoryItem2->setQuantity($this->successData['inventoryItem']['item1']['Quantity']);
+        $inventoryItem2->setDescription($this->successData['inventoryItem']['item1']['Description']);
+
+        $inventory = new Inventory($this->successData['user']);
+        $inventory->setInventoryItems([
+            'item1' => $inventoryItem1,
+            'item2' => $inventoryItem2
+        ]);
+        $this->assertTrue(gettype($inventory->getInventoryItems()) === 'array');
     }
 }

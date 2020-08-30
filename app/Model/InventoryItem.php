@@ -15,6 +15,25 @@ use Whoops\Exception\ErrorException;
 class InventoryItem
 {
     /**
+     * This is a list of all the different sections for the inventory. E.g: Kitchen, Bathroom, Pantry, etc
+     *
+     * @var string[]
+     */
+    private $defaultSections = [
+        'Bakery',
+        'Breakfast and cereal',
+        'Sauce',
+        'Sweets',
+        'Frozen food',
+        'Drinks',
+        'Milk, butter and eggs',
+        'Vegetables',
+        'Meat',
+        'Cans and Packets',
+        'Cooking Ingredients'
+    ];
+
+    /**
      * @var int
      */
     protected $quantity;
@@ -38,11 +57,6 @@ class InventoryItem
      * @var string
      */
     protected $type;
-
-    /**
-     * @var DateTime
-     */
-    protected $expiryDate;
 
     /**
      * This is the user entered/predicted usage of an inventory item
@@ -126,26 +140,15 @@ class InventoryItem
 
     /**
      * @param string $type
+     * @throws \Exception
      */
     public function setType(string $type)
     {
-        $this->type = $type;
-    }
-
-    /**
-     * @return DateTime
-     */
-    public function getExpiryDate()
-    {
-        return $this->expiryDate;
-    }
-
-    /**
-     * @param DateTime $expiryDate
-     */
-    public function setExpiryDate(DateTime $expiryDate)
-    {
-        $this->expiryDate = $expiryDate;
+        if (in_array($type, $this->defaultSections)) {
+            $this->type = $type;
+        } else {
+            throw new \Exception('This is not a valid section');
+        }
     }
 
     /**
