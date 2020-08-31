@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Model\Inventory;
+use Error;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -91,7 +92,13 @@ class AjaxController extends Controller
     {
         $response = null;
         if (json_decode($request->getContent())) {
-            $response = InventoryItemController::addItem(json_decode($request->getContent()));
+            try {
+                $response = InventoryItemController::addItem(json_decode($request->getContent()));
+            } catch (\Error $e) {
+                return response()->json(['errorMessage' => $e->getMessage()], 400);
+            } catch (Exception $e) {
+                return response()->json(['errorMessage' => $e->getMessage()], 400);
+            }
         }
 
         return response()->json(['message' => $response], 200);

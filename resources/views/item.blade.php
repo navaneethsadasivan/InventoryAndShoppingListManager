@@ -131,6 +131,7 @@
                     $('.name').val('')
                     $('.price').val('')
                     $('.useBy').val('')
+                    $('.type').val('')
                     $('.modal-footer').empty().append(
                         '<button class="btn btn-success" onclick="submit()">' +
                             '<i class="fas fa-paper-plane"></i>' +
@@ -186,8 +187,9 @@
                 let name = $('.name').val()
                 let price = $('.price').val()
                 let useBy = $('.useBy').val()
+                let type = $('.type').val()
 
-                if (name && price && useBy) {
+                if (name && price && useBy && type) {
                     $.ajax({
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -197,10 +199,16 @@
                         data: JSON.stringify({
                             'name': name,
                             'price': price,
-                            'useBy': useBy
+                            'useBy': useBy,
+                            'type': type
                         }),
                         success: function () {
                             location.reload()
+                        },
+                        error: function (data) {
+                            $('.alert-notification').empty().append(
+                                '<div class="alert-danger">' + data.responseJSON.errorMessage + '</div>'
+                            ).delay(3000).slideUp(200)
                         }
                     })
                 } else {
@@ -266,7 +274,6 @@
                                 location.reload()
                             },
                             error: function (data) {
-                                console.log(data)
                                 if (data.responseJSON.errorMessage) {
                                     $('.alert-notification').empty().append(
                                         '<div class="alert-danger">' + data.responseJSON.errorMessage + '</div>'

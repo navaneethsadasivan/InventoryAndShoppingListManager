@@ -34,17 +34,22 @@ class InventoryItemController extends Controller
     /**
      * @param object $item
      * @return string
+     * @throws Exception
      */
     public static function addItem($item)
     {
         $inventory = new InventoryItem();
-        $newItem = [
-            'name' => $item->name,
-            'price' => $item->price,
-            'useBy' => $item->useBy
-        ];
+        $inventory->setName(
+            $item->name
+        )->setPrice(
+            $item->price
+        )->setUsage(
+            $item->useBy
+        )->setType(
+            $item->type
+        );
 
-        return $inventory->addItem($newItem);
+        return $inventory->addItem();
     }
 
     /**

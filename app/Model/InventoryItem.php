@@ -252,20 +252,24 @@ class InventoryItem
     }
 
     /**
-     * @param array $item
      * @return string
      */
-    public function addItem($item)
+    public function addItem()
     {
-        DB::table('inventory_item')->insert(
-            [
-                'name' => $item['name'],
-                'price' => $item['price'],
-                'use_by' => $item['useBy']
-            ]
-        );
+        try {
+            DB::table('inventory_item')->insert(
+                [
+                    'name' => $this->getName(),
+                    'price' => $this->getPrice(),
+                    'use_by' => $this->getUsage(),
+                    'type' => $this->getType()
+                ]
+            );
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
 
-        return 'Item Added';
+        return 200;
     }
 
     /**
