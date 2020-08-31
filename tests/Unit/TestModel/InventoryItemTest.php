@@ -18,7 +18,8 @@ class InventoryItemTest extends TestCase
         'type' => 'Bakery',
         'description' => 'This is a vanilla cheesecake',
         'price' => 1.45,
-        'usage' => 2
+        'usage' => 2,
+        'quantity' => 2
     ];
 
     public function testInventoryItemNameGetterAndSetter()
@@ -65,4 +66,12 @@ class InventoryItemTest extends TestCase
         $this->assertTrue($inventoryItem->getPrice() === $this->successTestData['price']);
         $this->assertFalse($inventoryItem->getPrice() === 2.8);
     }
+    public function testInventoryItemQuantityGetterAndSetter()
+    {
+        $inventory = new InventoryItem();
+        $inventory->setQuantity($this->successTestData['quantity']);
+        $this->assertTrue($inventory->getQuantity() === $this->successTestData['quantity']);
+        $this->assertFalse($inventory->getQuantity() === 4);
+    }
+
 }

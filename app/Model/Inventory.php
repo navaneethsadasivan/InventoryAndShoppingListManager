@@ -1,7 +1,6 @@
 <?php
 namespace App\Model;
 
-use http\Exception;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -19,29 +18,6 @@ class Inventory
      * @var int
      */
     protected $totalCount;
-
-    /**
-     * @var int
-     */
-    protected $quantity;
-
-    /**
-     * @return int
-     */
-    public function getQuantity()
-    {
-        return $this->quantity;
-    }
-
-    /**
-     * @param int $quantity
-     * @return Inventory
-     */
-    public function setQuantity(int $quantity)
-    {
-        $this->quantity = $quantity;
-        return $this;
-    }
 
     /**
      * @var int

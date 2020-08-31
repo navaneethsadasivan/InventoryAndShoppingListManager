@@ -71,12 +71,4 @@ class InventoryTest extends TestCase
         $this->assertTrue($inventory->getTotalCount() === $this->successData['totalCount']);
         $this->assertFalse($inventory->getTotalCount() === 4.00);
     }
-
-    public function testInventoryQuantityGetterAndSetter()
-    {
-        $inventory = new Inventory($this->successData['user']);
-        $inventory->setQuantity($this->successData['inventoryItem']['item1Quantity']);
-        $this->assertTrue($inventory->getQuantity() === $this->successData['inventoryItem']['item1Quantity']);
-        $this->assertFalse($inventory->getTotalCount() === $this->successData['inventoryItem']['item2Quantity']);
-    }
 }

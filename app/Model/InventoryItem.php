@@ -1,12 +1,7 @@
 <?php
 namespace App\Model;
 
-use DateTime;
-use http\Exception;
-use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
-use PHPUnit\Framework\Error\Warning;
-use Whoops\Exception\ErrorException;
 
 /**
  * Class InventoryItem
@@ -66,6 +61,29 @@ class InventoryItem
      * @var int
      */
     protected $id;
+
+    /**
+     * @var int
+     */
+    protected $quantity;
+
+    /**
+     * @return int
+     */
+    public function getQuantity()
+    {
+        return $this->quantity;
+    }
+
+    /**
+     * @param int $quantity
+     * @return InventoryItem
+     */
+    public function setQuantity(int $quantity)
+    {
+        $this->quantity = $quantity;
+        return $this;
+    }
 
     /**
      * @return int
