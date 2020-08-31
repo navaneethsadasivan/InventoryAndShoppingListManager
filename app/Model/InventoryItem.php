@@ -35,11 +35,6 @@ class InventoryItem
     ];
 
     /**
-     * @var int
-     */
-    protected $quantity;
-
-    /**
      * @var string
      */
     protected $name;
@@ -68,19 +63,26 @@ class InventoryItem
     protected $usage;
 
     /**
+     * @var int
+     */
+    protected $id;
+
+    /**
      * @return int
      */
-    public function getQuantity()
+    public function getId(): int
     {
-        return $this->quantity;
+        return $this->id;
     }
 
     /**
-     * @param int $quantity
+     * @param int $id
+     * @return InventoryItem
      */
-    public function setQuantity(int $quantity)
+    public function setId(int $id)
     {
-        $this->quantity = $quantity;
+        $this->id = $id;
+        return $this;
     }
 
     /**
@@ -93,10 +95,12 @@ class InventoryItem
 
     /**
      * @param string $name
+     * @return InventoryItem
      */
     public function setName(string $name)
     {
         $this->name = $name;
+        return $this;
     }
 
     /**
@@ -109,10 +113,12 @@ class InventoryItem
 
     /**
      * @param string $description
+     * @return InventoryItem
      */
     public function setDescription(string $description)
     {
         $this->description = $description;
+        return $this;
     }
 
     /**
@@ -125,10 +131,12 @@ class InventoryItem
 
     /**
      * @param float $price
+     * @return InventoryItem
      */
     public function setPrice(float $price)
     {
         $this->price = $price;
+        return $this;
     }
 
     /**
@@ -141,12 +149,14 @@ class InventoryItem
 
     /**
      * @param string $type
+     * @return InventoryItem
      * @throws \Exception
      */
     public function setType(string $type)
     {
         if (in_array($type, $this->defaultSections)) {
             $this->type = $type;
+            return $this;
         } else {
             throw new \Exception('This is not a valid section');
         }
@@ -162,10 +172,12 @@ class InventoryItem
 
     /**
      * @param int $usage
+     * @return InventoryItem
      */
     public function setUsage(int $usage)
     {
         $this->usage = $usage;
+        return $this;
     }
 
     /**
@@ -178,8 +190,7 @@ class InventoryItem
             'Description' => $this->getDescription(),
             'Price' => $this->getPrice(),
             'Usage' => $this->getUsage(),
-            'Type' => $this->getType(),
-            'Quantity' => $this->getQuantity()
+            'Type' => $this->getType()
         ];
     }
 
@@ -261,21 +272,26 @@ class InventoryItem
      * @param array $updatedItem
      * @return string
      */
-    public function updateItem($updatedItem)
+    public function updateItem()
     {
-        DB::table('inventory_item')
-            ->where(
-                [
-                    'id' => $updatedItem['id']
-                ]
-            )->update(
-                [
-                    'name' => $updatedItem['name'],
-                    'price' => $updatedItem['price'],
-                    'use_by' => $updatedItem['useBy']
-                ]
-            );
+        try {
+            DB::table('inventory_item')
+                ->where(
+                    [
+                        'id' => $this->getId()
+                    ]
+                )->update(
+                    [
+                        'name' => $this->getName(),
+                        'price' => $this->getPrice(),
+                        'use_by' => $this->getUsage(),
+                        'type' => $this->getType()
+                    ]
+                );
 
-        return 'Item Updated';
+            return 200;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 }

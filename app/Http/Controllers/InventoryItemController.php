@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\InventoryItem;
+use Exception;
 
 /**
  * Class InventoryItemController
@@ -49,17 +50,23 @@ class InventoryItemController extends Controller
     /**
      * @param Object $item
      * @return mixed
+     * @throws Exception
      */
     public static function updateItem($item)
     {
         $inventory = new InventoryItem();
-        $updatedItem = [
-            'id' => $item->id,
-            'name' => $item->name,
-            'price' => $item->price,
-            'useBy' => $item->useBy
-        ];
+        $inventory->setName(
+            $item->name
+        )->setId(
+            $item->id
+        )->setType(
+            $item->type
+        )->setUsage(
+            $item->useBy
+        )->setPrice(
+            $item->price
+        );
 
-        return $inventory->updateItem($updatedItem);
+        return $inventory->updateItem();
     }
 }

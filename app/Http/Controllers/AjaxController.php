@@ -102,12 +102,17 @@ class AjaxController extends Controller
      *
      * @param Request $request
      * @return JsonResponse
+     * @throws Exception
      */
     public function putUpdateItem(Request $request)
     {
         $response = null;
         if (json_decode($request->getContent())) {
-            $response = InventoryItemController::updateItem(json_decode($request->getContent()));
+            try {
+                $response = InventoryItemController::updateItem(json_decode($request->getContent()));
+            } catch (\Error $e) {
+                return response()->json(['errorMessage' => $e->getMessage()], 400);
+            }
         }
 
         return response()->json(['message' => $response], 200);

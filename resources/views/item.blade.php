@@ -107,6 +107,10 @@
                                     <input type="text" class="price" placeholder="Enter item price">
                                 </div>
                                 <div class="d-flex p-2 col-12 justify-content-between">
+                                    <label><strong>Category</strong></label>
+                                    <input type="text" class="type" placeholder="Enter item type">
+                                </div>
+                                <div class="d-flex p-2 col-12 justify-content-between">
                                     <label><strong>Use By (in weeks)</strong></label>
                                     <input type="text" class="useBy" placeholder="Enter item use by">
                                 </div>
@@ -218,6 +222,7 @@
                 $('.modal-header h3').html('Update Item')
                 $('.name').val(itemToEdit.name)
                 $('.price').val(itemToEdit.price)
+                $('.type').val(itemToEdit.type)
                 $('.useBy').val(itemToEdit.use_by)
                 $('.modal-footer').empty().append(
                     '<button class="btn btn-success"">' +
@@ -228,13 +233,21 @@
                     let name = $('.name').val()
                     let price = $('.price').val()
                     let useBy = $('.useBy').val()
+                    let type = $('.type').val()
 
-                    if (name === itemToEdit.name && price === itemToEdit.price && useBy === itemToEdit.use_by) {
+                    if (
+                        name === itemToEdit.name &&
+                        price === (itemToEdit.price).toString() &&
+                        useBy === (itemToEdit.use_by).toString() &&
+                        type === itemToEdit.type
+                    ) {
                         $('.alert-notification').empty().append(
                             '<div class="alert-danger">No changes made</div>'
-                        ).delay(3000).slideUp(200, function () {
-                            $(this).alert('close')
-                        })
+                        ).delay(3000).slideUp(200)
+                    }else if (name === '' || price === '' || useBy === '') {
+                        $('.alert-notification').empty().append(
+                            '<div class="alert-danger">Item Detail cant be empty</div>'
+                        ).delay(3000).slideUp(200)
                     } else {
                         $.ajax({
                             headers: {
@@ -245,11 +258,24 @@
                             data: JSON.stringify({
                                 'id': itemToEdit.id,
                                 'name': name,
+                                'type': type,
                                 'price': price,
                                 'useBy': useBy
                             }),
                             success: function () {
                                 location.reload()
+                            },
+                            error: function (data) {
+                                console.log(data)
+                                if (data.responseJSON.errorMessage) {
+                                    $('.alert-notification').empty().append(
+                                        '<div class="alert-danger">' + data.responseJSON.errorMessage + '</div>'
+                                    ).delay(3000).slideUp(200)
+                                } else if (data.responseJSON.message) {
+                                    $('.alert-notification').empty().append(
+                                        '<div class="alert-danger">' + data.responseJSON.message + '</div>'
+                                    ).delay(3000).slideUp(200)
+                                }
                             }
                         })
                     }
