@@ -148,39 +148,41 @@
                     type: 'GET',
                     url: '/getItems',
                     success: function (data) {
-                        itemList = data.items
-                        render()
+                        if (data.items) {
+                            itemList = data.items
+                            render()
+                        } else {
+                            $('.items').empty().append(
+                                '<p>' + data.message + '</p>'
+                            )
+                        }
                     }
                 })
             }
 
             function render() {
-                if (itemList === null) {
-                    $('.items').append('<p>Nothing to render</p>')
-                } else {
-                    $('.items').empty()
-                    $.each(itemList, function (index, itemData) {
-                        $('.items').append(
-                            '<div class="d-flex border-box">' +
-                                '<div class="d-flex col-8">' +
-                                    '<div class="d-inline-block">' +
-                                        '<label>Name:  </label>' +
-                                            itemData.name + '<br>'+
-                                        '<label>Price:  </label>' +
-                                            itemData.price + '<br>'+
-                                        '<label>Category:  </label>' +
-                                            itemData.type + '<br>'+
-                                        '<label>Use By:  </label>' +
-                                            itemData.use_by + '<span> week(s) </span>'+ '<br>'+
-                                    '</div>' +
+                $('.items').empty()
+                $.each(itemList, function (index, itemData) {
+                    $('.items').append(
+                        '<div class="d-flex border-box">' +
+                            '<div class="d-flex col-8">' +
+                                '<div class="d-inline-block">' +
+                                    '<label>Name:  </label>' +
+                                        itemData.name + '<br>'+
+                                    '<label>Price:  </label>' +
+                                        itemData.price + '<br>'+
+                                    '<label>Category:  </label>' +
+                                        itemData.type + '<br>'+
+                                    '<label>Use By:  </label>' +
+                                        itemData.use_by + '<span> week(s) </span>'+ '<br>'+
                                 '</div>' +
-                                '<div class="d-flex col-3">' +
-                                    '<button class="btn btn-light" id="' + itemData.id + '" onclick="editItem(this.id)"><i class="fas fa-edit"></i></button>' +
-                                '</div>' +
-                            '</div>'
-                        )
-                    })
-                }
+                            '</div>' +
+                            '<div class="d-flex col-3">' +
+                                '<button class="btn btn-light" id="' + itemData.id + '" onclick="editItem(this.id)"><i class="fas fa-edit"></i></button>' +
+                            '</div>' +
+                        '</div>'
+                    )
+                })
             }
 
             function submit() {

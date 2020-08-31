@@ -195,11 +195,17 @@ class InventoryItem
     }
 
     /**
-     * @return array
+     * @return array|string
      */
     public function getData()
     {
-        return DB::select('select * from inventory_item');
+        $db = DB::select('select * from inventory_item');
+
+        if ($db) {
+            return $db;
+        } else {
+            return 'No data found';
+        }
     }
 
     /**
@@ -273,7 +279,6 @@ class InventoryItem
     }
 
     /**
-     * @param array $updatedItem
      * @return string
      */
     public function updateItem()

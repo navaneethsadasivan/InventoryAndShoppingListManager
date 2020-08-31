@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Model\Inventory;
+use App\Model\InventoryItem;
 use Error;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -21,7 +22,11 @@ class AjaxController extends Controller
      */
     public function getInventoryItems()
     {
-        return response()->json(['items' => InventoryItemController::show()], 200);
+        if (InventoryItemController::show() === 'No data found') {
+            return response()->json(['message' => 'No data found'], 200);
+        } else {
+            return response()->json(['items' => InventoryItemController::show()], 200);
+        }
     }
 
     /**
