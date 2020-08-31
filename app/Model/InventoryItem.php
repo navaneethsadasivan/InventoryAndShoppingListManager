@@ -23,6 +23,7 @@ class InventoryItem
         'Bakery',
         'Breakfast and cereal',
         'Sauce',
+        'Pasta',
         'Sweets',
         'Frozen food',
         'Drinks',

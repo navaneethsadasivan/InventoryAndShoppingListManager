@@ -44,11 +44,13 @@ class ShoppingList
     }
 
     /**
-     * @param InventoryItem $inventoryItems
+     * @param InventoryItem[] $inventoryItems
      */
     public function setInventoryItems($inventoryItems)
     {
-        $this->inventoryItems[] = $inventoryItems->asArray();
+        foreach ($inventoryItems as $index => $inventoryItem) {
+            $this->inventoryItems[] = $inventoryItem;
+        }
     }
 
     /**
