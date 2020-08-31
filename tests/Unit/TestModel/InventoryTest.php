@@ -15,7 +15,6 @@ class InventoryTest extends TestCase
         'inventoryItem' => [
             'item1' => [
                 'Name' => 'Vanilla Cheesecake',
-                'Quantity' => 2,
                 'Price' => 1.35,
                 'Description' => 'This is a cheesecake',
                 'Type' => 'Bakery',
@@ -23,7 +22,6 @@ class InventoryTest extends TestCase
             ],
             'item2' => [
                 'Name' => 'Fettuccine',
-                'Quantity' => 3,
                 'Price' => 0.85,
                 'Description' => 'This is pasta',
                 'Type' => 'Pasta',
@@ -47,7 +45,6 @@ class InventoryTest extends TestCase
         $inventoryItem1->setName($this->successData['inventoryItem']['item1']['Name']);
         $inventoryItem1->setType($this->successData['inventoryItem']['item1']['Type']);
         $inventoryItem1->setUsage($this->successData['inventoryItem']['item1']['Usage']);
-        $inventoryItem1->setQuantity($this->successData['inventoryItem']['item1']['Quantity']);
         $inventoryItem1->setDescription($this->successData['inventoryItem']['item1']['Description']);
 
         $inventoryItem2 = new InventoryItem();
@@ -55,7 +52,6 @@ class InventoryTest extends TestCase
         $inventoryItem2->setName($this->successData['inventoryItem']['item2']['Name']);
         $inventoryItem2->setType($this->successData['inventoryItem']['item2']['Type']);
         $inventoryItem2->setUsage($this->successData['inventoryItem']['item2']['Usage']);
-        $inventoryItem2->setQuantity($this->successData['inventoryItem']['item2']['Quantity']);
         $inventoryItem2->setDescription($this->successData['inventoryItem']['item2']['Description']);
 
         $inventory = new Inventory($this->successData['user']);

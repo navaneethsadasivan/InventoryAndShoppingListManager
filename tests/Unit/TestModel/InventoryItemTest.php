@@ -14,21 +14,12 @@ class InventoryItemTest extends TestCase
      * @var array
      */
     protected $successTestData = [
-        'quantity' => 2,
         'name' => 'Vanilla Cheesecake',
         'type' => 'Bakery',
         'description' => 'This is a vanilla cheesecake',
         'price' => 1.45,
         'usage' => 2
     ];
-
-    public function testInventoryItemQuantityGetterAndSetter()
-    {
-        $inventoryItem = new InventoryItem();
-        $inventoryItem->setQuantity($this->successTestData['quantity']);
-        $this->assertTrue($inventoryItem->getQuantity() === $this->successTestData['quantity']);
-        $this->assertFalse($inventoryItem->getQuantity() === 3);
-    }
 
     public function testInventoryItemNameGetterAndSetter()
     {

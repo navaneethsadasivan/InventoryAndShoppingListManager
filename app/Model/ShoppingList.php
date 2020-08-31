@@ -11,7 +11,7 @@ use Phpml\Association\Apriori;
 class ShoppingList
 {
     /**
-     * @var InventoryItem[]
+     * @var Inventory[]
      */
     protected $inventoryItems;
 
@@ -36,7 +36,7 @@ class ShoppingList
     }
 
     /**
-     * @return InventoryItem[]
+     * @return Inventory[]
      */
     public function getInventoryItems()
     {
@@ -78,14 +78,14 @@ class ShoppingList
     }
 
     /**
-     * @param InventoryItem[] $inventoryItems
+     * @param $inventoryItemsQuantity
      */
-    public function setTotalItemCount($inventoryItems)
+    public function setTotalItemCount($inventoryItemsQuantity)
     {
         $totalItemCount = 0;
 
-        foreach ($inventoryItems as $inventoryItem) {
-            $totalItemCount += $inventoryItem->getQuantity();
+        foreach ($inventoryItemsQuantity as $inventoryItemQuantity) {
+            $totalItemCount += $inventoryItemQuantity;
         }
 
         $this->totalItemCount = $totalItemCount;

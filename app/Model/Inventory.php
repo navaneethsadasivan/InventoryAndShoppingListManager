@@ -23,6 +23,29 @@ class Inventory
     /**
      * @var int
      */
+    protected $quantity;
+
+    /**
+     * @return int
+     */
+    public function getQuantity()
+    {
+        return $this->quantity;
+    }
+
+    /**
+     * @param int $quantity
+     * @return Inventory
+     */
+    public function setQuantity(int $quantity)
+    {
+        $this->quantity = $quantity;
+        return $this;
+    }
+
+    /**
+     * @var int
+     */
     protected $user;
 
     public function __construct($userId)
@@ -30,11 +53,17 @@ class Inventory
         $this->setUser($userId);
     }
 
+    /**
+     * @return int
+     */
     public function getUser()
     {
         return $this->user;
     }
 
+    /**
+     * @param $userId
+     */
     public function setUser($userId)
     {
         $this->user = $userId;
@@ -50,10 +79,12 @@ class Inventory
 
     /**
      * @param InventoryItem[] $inventoryItems
+     * @return Inventory
      */
     public function setInventoryItems(array $inventoryItems)
     {
         $this->inventoryItems = $inventoryItems;
+        return $this;
     }
 
     /**
@@ -66,10 +97,12 @@ class Inventory
 
     /**
      * @param int $totalCount
+     * @return Inventory
      */
     public function setTotalCount(int $totalCount)
     {
         $this->totalCount = $totalCount;
+        return $this;
     }
 
     /**
