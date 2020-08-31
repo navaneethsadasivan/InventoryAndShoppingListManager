@@ -20,13 +20,15 @@ class InventoryTest extends TestCase
                 'Type' => 'Bakery',
                 'Usage' => 2
             ],
+            'item1Quantity' => 2,
             'item2' => [
                 'Name' => 'Fettuccine',
                 'Price' => 0.85,
                 'Description' => 'This is pasta',
                 'Type' => 'Pasta',
                 'Usage' => 5
-            ]
+            ],
+            'item2Quantity' => 3
         ],
         'totalCount' => 5,
         'totalPrice' => 5.25
@@ -68,5 +70,13 @@ class InventoryTest extends TestCase
         $inventory->setTotalCount($this->successData['totalCount']);
         $this->assertTrue($inventory->getTotalCount() === $this->successData['totalCount']);
         $this->assertFalse($inventory->getTotalCount() === 4.00);
+    }
+
+    public function testInventoryQuantityGetterAndSetter()
+    {
+        $inventory = new Inventory($this->successData['user']);
+        $inventory->setQuantity($this->successData['inventoryItem']['item1Quantity']);
+        $this->assertTrue($inventory->getQuantity() === $this->successData['inventoryItem']['item1Quantity']);
+        $this->assertFalse($inventory->getTotalCount() === $this->successData['inventoryItem']['item2Quantity']);
     }
 }
