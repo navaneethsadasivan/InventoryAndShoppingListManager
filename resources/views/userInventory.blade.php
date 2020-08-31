@@ -79,8 +79,8 @@
                 </div>
                 @auth
                     <div class="d-flex justify-content-end align-items-center">
-                        <button class="btn" data-toggle="modal" data-target=".modal">
-                            <i class="fas fa-plus d-flex"><p style="font-size: 1rem">Add new Item</p></i>
+                        <button id="addNewItem" class="btn" data-toggle="modal" data-target=".modal">
+                            <i class="fas fa-plus"></i>Add new item
                         </button>
                     </div>
 
@@ -125,6 +125,14 @@
         @endsection
 
         <script>
+            document.addEventListener('click', function (e) {
+                console.log(e)
+                if (e.target.nodeName === 'SPAN' || e.target.id === 'addNewItem') {
+                    $('.searchElement').val('')
+                    $('.searchItems').empty()
+                }
+            })
+
             let itemList = null
             let previousBoughtItems = null
             let searchItems = []
