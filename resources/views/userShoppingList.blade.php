@@ -37,7 +37,7 @@
                 padding: 5px;
                 margin: 5px;
                 background-color: #a1cbef;
-                width: 25%;
+                width: 250px;
             }
 
             .history>i, .history>strong {
@@ -141,7 +141,14 @@
                         </div>
                     </div>
                     <div class="d-flex col-4 border-left">
-                        <h3>Expired Items</h3>
+                        <div class="container">
+                            <div class="row">
+                                <h3>Expired Items</h3>
+                            </div>
+                            <div class="row">
+                                <div class="expiredItems"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -183,6 +190,41 @@
             function defaultPage() {
                 $('#searchElement').val('')
                 $('.finalPrice').val(0)
+                $.ajax({
+                    type: 'GET',
+                    url: '/getExpiringItems',
+                    success: function (data) {
+                        console.log(data.expiringItems)
+                        if (data.expiringItems) {
+                            renderExpiredItems(data.expiringItems)
+                        } else {
+                            $('.expiredItems').append(
+                                '<p>No items have expired</p>'
+                            )
+                        }
+                    }
+                })
+            }
+
+            function renderExpiredItems(items) {
+                $('.expiredItems').empty()
+                $.each(items, function (index, itemData) {
+                    $('.expiredItems').append(
+                        '<div class="border-box">' +
+                            '<div class="d-flex flex-wrap>"' +
+                                '<label><strong>Name: </strong></label>' +
+                                itemData.itemDetails.name + '<br>' +
+                            '</div>' +
+                            '<label><strong>Price:</strong></label>' +
+                                itemData.itemDetails.price + '<br>' +
+                            '<label><strong>Last Bought:</strong></label>' +
+                                itemData.lastBought + '<br>' +
+                            '<label><strong>Use By:</strong></label>' +
+                                itemData.itemDetails.use_by + '<span> week(s) </span>' + '<br>' +
+                            '<button class="btn btn-light" id="' + itemData.itemDetails.id + '" value="' + itemData.itemDetails.name + '"onclick="addItem(this.id)">Add Item</button>' +
+                        '</div>'
+                    )
+                })
             }
 
             function enter(listNumber, itemListNumber) {

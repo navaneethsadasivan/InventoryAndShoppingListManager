@@ -194,4 +194,12 @@ class AjaxController extends Controller
     {
         return response()->json(['prevItems' => UserInventoryController::getPrevItems()], 200);
     }
+
+    /**
+     * @return JsonResponse
+     */
+    public function getExpiringItems()
+    {
+        return response()->json(['expiringItems' => UserInventoryController::getExpiringItems()], 200);
+    }
 }

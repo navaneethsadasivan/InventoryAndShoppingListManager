@@ -44,10 +44,23 @@ class UserInventoryController extends Controller
         return $inventory->removeStock($item);
     }
 
+    /**
+     * @return array
+     */
     public static function getPrevItems()
     {
         $user = Auth::user();
         $inventory = new Inventory($user['id']);
         return $inventory->getPreviousBoughtItems();
+    }
+
+    /**
+     * @return array
+     */
+    public static function getExpiringItems()
+    {
+        $user = Auth::user();
+        $inventory = new Inventory($user['id']);
+        return $inventory->getExpiredItems();
     }
 }

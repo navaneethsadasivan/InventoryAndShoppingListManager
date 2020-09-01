@@ -106,3 +106,7 @@ Route::post(
 Route::get(
     '/getPrevBoughtItemUser', 'AjaxController@getPreviousItem'
 )->name('getPreviouslyBoughtItemUser');
+
+Route::get(
+    '/getExpiringItems', 'AjaxController@getExpiringItems'
+)->name('getExpiringItems');

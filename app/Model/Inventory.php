@@ -1,6 +1,7 @@
 <?php
 namespace App\Model;
 
+use Exception;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -35,6 +36,11 @@ class Inventory
     public function getUser()
     {
         return $this->user;
+    }
+
+    public function getUserWithFormat()
+    {
+        return sprintf("%'02d", $this->user);
     }
 
     /**
@@ -142,14 +148,14 @@ class Inventory
 
     /**
      * @param int $itemId
-     * @throws \Exception
+     * @throws Exception
      */
     public function removeStock($itemId)
     {
         $inventoryItem = DB::selectOne('select * from inventory_user where item_id = ' . $itemId . ' and user_id = ' . $this->getUser());
         if ($inventoryItem) {
             if ($inventoryItem->current_stock === 0) {
-                throw new \Exception('Cannot remove item with stock 0');
+                throw new Exception('Cannot remove item with stock 0');
             } else {
                 DB::table('inventory_user')
                     ->where(
@@ -169,7 +175,7 @@ class Inventory
     /**
      * @param int $itemId
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function addStock($itemId)
     {
@@ -221,5 +227,75 @@ class Inventory
         }
 
         return $previousItems;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExpiredItems()
+    {
+        $largestUseByTime = DB::selectone('select max(use_by) as longest from inventory_item');
+        $rowCount = DB::selectone('select count(*) as rowCount from shopping_list where list_id like "U' . $this->getUserWithFormat() . '%"');
+        $largestUseByTime->longest = 2;
+
+        $maxLatestDate = date("Y-m-d H:i:s", strtotime("-" . $largestUseByTime->longest . " weeks"));
+
+        $latestListIds = DB::select(
+            'select
+                list_id, created_at
+            from
+                shopping_list
+            where list_id like "U' . $this->getUserWithFormat() . '%"
+            and created_at >= "' . $maxLatestDate . '%"
+            ORDER BY id asc'
+        );
+
+        $historyListItems = [];
+
+        foreach ($latestListIds as $index => $listDetails) {
+            $items = DB::select('select item_id from shopping_list_items where shopping_list_id = "' . $listDetails->list_id . '"');
+            $historyListItems[$listDetails->list_id] = [
+                'items' => $items,
+                'listCreatedAt' => $listDetails->created_at
+            ];
+        }
+
+        $expiringItems = [];
+        foreach ($historyListItems as $listId => $listItems) {
+            if (!empty($expiringItems)) {
+                foreach ($expiringItems as $itemId => $latestEntry) {
+                    foreach ($listItems['items'] as $index => $itemObject) {
+                        if ($itemId === $itemObject->item_id) {
+                            $expiringItems[$itemObject->item_id] = $listItems['listCreatedAt'];
+                        } else if (!in_array($itemObject->item_id, array_keys($expiringItems))) {
+                            $expiringItems[$itemObject->item_id] = $listItems['listCreatedAt'];
+                        }
+                    }
+                }
+            } else {
+                foreach ($listItems['items'] as $index => $itemObject) {
+                    if (!in_array($itemObject->item_id, array_keys($expiringItems))) {
+                        $expiringItems[$itemObject->item_id] = $listItems['listCreatedAt'];
+                    }
+                }
+            }
+        }
+
+        foreach ($expiringItems as $id => $lastBought) {
+            $item = DB::selectone('select * from inventory_item where id = ' . $id);
+
+            $expiringDate = date("Y-m-d H:i:s", strtotime('+' . $item->use_by . ' weeks', strtotime($lastBought)));
+
+            if ($expiringDate > date("Y-m-d H:i:s")) {
+                unset($expiringItems[$id]);
+            } else {
+                $expiringItems[$id] = [
+                    'itemDetails' => $item,
+                    'lastBought' => date("d/m/y", strtotime($expiringItems[$id]))
+                ];
+            }
+        }
+
+        return $expiringItems;
     }
 }
