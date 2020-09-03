@@ -37,7 +37,7 @@ class AprioriTrain
         $this->userId = $userId;
     }
 
-    protected function train($sup = 0.5, $conf = 0.85)
+    protected function train($sup = 0.1, $conf = 0.5)
     {
         $this->associator = new Apriori($support = $sup, $confidence = $conf);
         $this->associator->train($this->testSamples, $this->testLabels);
@@ -60,7 +60,7 @@ class AprioriTrain
 
     public function generateList()
     {
-        $shoppingListModel = new ShoppingList($this->getUserIdWithoutFormat());
+        $inventory = new Inventory($this->getUserIdWithoutFormat());
 
         $items = DB::select('select * from shopping_list_items WHERE shopping_list_id like "U' . $this->getUserId() . '%"');
         $itemSet = [];
@@ -73,18 +73,19 @@ class AprioriTrain
             array_push($this->testSamples, $itemList);
         }
 
+
         $confidence = $this->getConfidence(count($this->testSamples));
 
         $this->train();
 
-        $finalList = $shoppingListModel->getItemsForApriori();
+//        return $this->associate();
+        return $this->test($this->associate());
 
-        $generatedList = $this->buildList($this->associate(), $finalList);
+        $generatedList = $this->buildList($this->associate(), $inventory->getExpiredItems());
 
         $newList = [];
         foreach ($generatedList as $index => $itemId) {
             $item = DB::selectOne('select * from inventory_item where id =' . $itemId);
-//            array_push($newList, $item->name);
             $newList[] = $item;
         }
 
@@ -96,36 +97,55 @@ class AprioriTrain
         return $arrayCount/100;
     }
 
-    protected function buildList($mlList, $frequentItems)
+    protected function buildList($mlList, $expiredItems)
     {
         $data = [];
+        $expired = [];
         $referenceItems = [];
 
-        foreach ($frequentItems as $item) {
-            foreach ($mlList as $mlData) {
-                if (in_array($item, $mlData['antecedent'])) {
-                    if ($mlData['confidence'] >= 0.8 && $mlData['support'] >= 0.4) {
-                        foreach ($mlData['antecedent'] as $listItemA) {
-                            if (!in_array($listItemA, $referenceItems)) {
-                                $referenceItems[] = $listItemA;
-                                $data[] = $listItemA;
-                            } else {
-                                continue;
-                            }
-                        }
-                        foreach ($mlData['consequent'] as $listItemB) {
-                            if (!in_array($listItemB, $referenceItems)) {
-                                $referenceItems[] = $listItemB;
-                                $data[] = $listItemB;
-                            } else {
-                                continue;
-                            }
-                        }
+        foreach ($expiredItems as $expiredItemId => $expiredItemDetails) {
+            $expired[] = $expiredItemId;
+        }
+
+        foreach ($mlList as $mlData) {
+            if ($mlData['confidence'] >= 0.7 && $mlData['support'] >= 0.15) {
+                foreach ($mlData['antecedent'] as $listItemA) {
+                    if (!in_array($listItemA, $referenceItems)) {
+                        $referenceItems[] = $listItemA;
+                        $data[] = $listItemA;
+                    } else {
+                        continue;
+                    }
+                }
+                foreach ($mlData['consequent'] as $listItemB) {
+                    if (!in_array($listItemB, $referenceItems)) {
+                        $referenceItems[] = $listItemB;
+                        $data[] = $listItemB;
+                    } else {
+                        continue;
                     }
                 }
             }
         }
 
+        foreach($expired as $expiredId) {
+            if (!in_array($expiredId, $data)) {
+                $data[] = $expiredId;
+            }
+        }
+
         return $data;
+    }
+
+    public function test($associationRules)
+    {
+        $test = [];
+        foreach ($associationRules as $rule) {
+            if ($rule['antecedent'] === 49 || in_array(49, $rule['antecedent'])) {
+                $test[] = $this->predict([49]);
+            }
+        }
+
+        return $test;
     }
 }

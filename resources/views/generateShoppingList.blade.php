@@ -88,7 +88,7 @@
         @endsection
 
         <script>
-            let itemIds = [];
+            let itemIds = {};
 
             function generate() {
                 $.ajax({
@@ -98,29 +98,30 @@
                     type: 'GET',
                     url: '/getList',
                     success: function (data) {
-                        let itemData = Object.entries(data['list'])
-                        $('#generateButton').prop('hidden', true)
-                        $('.confirmButton').prop('hidden', false)
-                        $('#generatedList').append(
-                            '<div class="d-flex row justify-content-between col-12">' +
+                        console.log(data)
+                        if (data.list) {
+                            $('#generateButton').prop('hidden', true)
+                            $('.confirmButton').prop('hidden', false)
+                            $('#generatedList').append(
+                                '<div class="d-flex row justify-content-between col-12">' +
                                 '<p class="col-10 border-bottom"><strong>Item</strong></p>' +
                                 '<p class="col-2 border-bottom"><strong>Price(&#163)</strong></p>' +
-                            '</div>'
-                        );
-                        itemData.forEach(insertItems)
+                                '</div>'
+                            );
+                            $.each(data.list, function (index, itemData) {
+                                let id = itemData.id
+                                itemIds[id] = 1
+                                $('#generatedList').append(
+                                    '<div class="d-flex justify-content-between">' +
+                                    '<span class="col-10">' + itemData.name + '</span>' +
+                                    '<span class="col-2">' + parseFloat(itemData.price).toFixed(2) + '</span>' +
+                                    '<button class="btn btn-light" id="'+ itemData.id +'" onclick="removeItem(this.id)">X</button>' +
+                                    '</div>'
+                                )
+                            })
+                        }
                     }
                 })
-            }
-
-            function insertItems(item, index) {
-                itemIds.push(item[1].id)
-                $('#generatedList').append(
-                    '<div class="d-flex justify-content-between">' +
-                        '<span class="col-10">' + item[1].name + '</span>' +
-                        '<span class="col-2">' + parseFloat(item[1].price).toFixed(2) + '</span>' +
-                        '<button class="btn btn-light" id="'+ item[1].id +'" onclick="removeItem(this.id)">X</button>' +
-                    '</div>'
-                )
             }
 
             function confirmList() {

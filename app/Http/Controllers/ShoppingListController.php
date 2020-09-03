@@ -11,7 +11,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 class ShoppingListController extends Controller
 {
     /**
-     * @param array $userDetails
+     * @param Authenticatable $userDetails
      * @return array
      */
     public static function show($userDetails)
