@@ -140,13 +140,32 @@
                             <button id="final-submit" class="btn btn-success" onclick="finalSubmit()">Confirm</button>
                         </div>
                     </div>
-                    <div class="d-flex col-4 border-left">
+                    <div class="d-flex">
                         <div class="container">
                             <div class="row">
-                                <h3>Expired Items</h3>
+                                <div class="d-flex col-4 border-left">
+                                    <div class="container">
+                                        <div class="row">
+                                            <h3>Expired Items</h3>
+                                        </div>
+                                        <div class="row">
+                                            <div class="expiredItems"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                            <hr>
                             <div class="row">
-                                <div class="expiredItems"></div>
+                                <div class="d-flex col-4 border-left">
+                                    <div class="container">
+                                        <div class="row">
+                                            <h3>Previously Bought Items</h3>
+                                        </div>
+                                        <div class="row">
+                                            <div class="prevItems"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -185,6 +204,9 @@
 
             let historyItems = {}
             let expiredItems = {}
+            let previouslyBoughtItems = {}
+            let addExpiredItems = 0
+            let addPrevBoughtItems = 0
             let addItems = 0
             let totalPrice = 0
 
@@ -195,7 +217,6 @@
                     type: 'GET',
                     url: '/getExpiringItems',
                     success: function (data) {
-                        console.log(data.expiringItems)
                         if (data.expiringItems) {
                             renderExpiredItems(data.expiringItems)
                         } else {
@@ -205,12 +226,48 @@
                         }
                     }
                 })
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/getPrevBoughtItemUser',
+                    success: function (data) {
+                        renderPrevItems(data.prevItems)
+                    }
+                })
+            }
+
+            function renderPrevItems(items) {
+                if (items.length === 0) {
+                    $('.prevItems').append(
+                        '<p>No previous items found</p>'
+                    )
+                } else {
+                    $('.prevItems').empty()
+                    $.each(items, function (index, itemData) {
+                        previouslyBoughtItems[itemData[0].id] = itemData[0]
+                        addPrevBoughtItems += 1
+                        $('.prevItems').append(
+                            '<div class="border-box" id="' + itemData[0].id + '">' +
+                                '<div class="d-flex flex-wrap>"' +
+                                    '<label><strong>Name: </strong></label>' +
+                                    itemData[0].name + '<br>' +
+                                '</div>' +
+                                '<label><strong>Price:</strong></label>' +
+                                itemData[0].price + '<br>' +
+                                '<label><strong>Use By:</strong></label>' +
+                                itemData[0].use_by + '<span> week(s) </span>' + '<br>' +
+                                '<button class="btn btn-light" onclick="addRenderedItem(' + itemData[0].id + ', 2)">Add Item</button>' +
+                            '</div>'
+                        )
+                    })
+                }
             }
 
             function renderExpiredItems(items) {
                 $('.expiredItems').empty()
                 $.each(items, function (index, itemData) {
                     expiredItems[itemData.itemDetails.id] = itemData.itemDetails
+                    addExpiredItems += 1
                     $('.expiredItems').append(
                         '<div class="border-box" id="' + itemData.itemDetails.id + '">' +
                             '<div class="d-flex flex-wrap>"' +
@@ -223,7 +280,7 @@
                                 itemData.lastBought + '<br>' +
                             '<label><strong>Use By:</strong></label>' +
                                 itemData.itemDetails.use_by + '<span> week(s) </span>' + '<br>' +
-                            '<button class="btn btn-light" onclick="addRenderedItem(' + itemData.itemDetails.id + ')">Add Item</button>' +
+                            '<button class="btn btn-light" onclick="addRenderedItem(' + itemData.itemDetails.id + ', 1)">Add Item</button>' +
                         '</div>'
                     )
                 })
@@ -257,7 +314,6 @@
             }
 
             function finalSubmit() {
-                console.log(historyItems)
                 $.ajax({
                     headers : {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -415,7 +471,23 @@
                                         expiredItems[id].lastBought + '<br>' +
                                         '<label><strong>Use By:</strong></label>' +
                                         expiredItems[id].use_by + '<span> week(s) </span>' + '<br>' +
-                                        '<button class="btn btn-light" onclick="addRenderedItem(' + expiredItems[id].id + ')">Add Item</button>' +
+                                        '<button class="btn btn-light" onclick="addRenderedItem(' + id + ', 1)">Add Item</button>' +
+                                    '</div>'
+                                )
+                            }
+
+                            if (previouslyBoughtItems[id]) {
+                                $('.prevItems').append(
+                                    '<div class="border-box" id="' + id + '">' +
+                                        '<div class="d-flex flex-wrap>"' +
+                                            '<label><strong>Name: </strong></label>' +
+                                            previouslyBoughtItems[id].name + '<br>' +
+                                        '</div>' +
+                                        '<label><strong>Price:</strong></label>' +
+                                        previouslyBoughtItems[id].price + '<br>' +
+                                        '<label><strong>Use By:</strong></label>' +
+                                        previouslyBoughtItems[id].use_by + '<span> week(s) </span>' + '<br>' +
+                                        '<button class="btn btn-light" onclick="addRenderedItem(' + id + ', 2)">Add Item</button>' +
                                     '</div>'
                                 )
                             }
@@ -496,7 +568,7 @@
                 $('.modal').modal('show')
             }
 
-            function addRenderedItem(id) {
+            function addRenderedItem(id, type) {
                 $('#' + id).remove();
                 $('.defaultList').empty()
                 if (totalPrice === '0.00') {
@@ -505,23 +577,46 @@
 
                 addItems += 1
                 historyItems[id] = 1
-                totalPrice += expiredItems[id].price
+                let name = null
+                let price = null
+
+                if (type === 1) {
+                    name = expiredItems[id].name
+                    price = expiredItems[id].price
+                    addExpiredItems -= 1;
+                    if (addExpiredItems === 0) {
+                        $('.expiredItems').empty().append(
+                            '<p>No items found</p>'
+                        )
+                    }
+                } else if (type === 2) {
+                    name = previouslyBoughtItems[id].name
+                    price = previouslyBoughtItems[id].price
+                    addPrevBoughtItems -= 1;
+                    if (addPrevBoughtItems === 0) {
+                        $('.prevItems').empty().append(
+                            '<p>No items found</p>'
+                        )
+                    }
+                }
+
+                totalPrice += price
 
                 $('.finalPrice').val(totalPrice)
                 $('.listItems').append(
                     '<div class="d-flex border" id="' + id + '">' +
                         '<div class="col-6">' +
-                            expiredItems[id].name +
+                            name +
                         '</div>' +
                         '<div class="col-2">' +
                             '<input class="quantity" value="' + historyItems[id] + '">' +
                         '</div>' +
                         '<div class="col-2">' +
-                            '<input class="price" value="' + expiredItems[id].price + '">' +
+                            '<input class="price" value="' + price + '">' +
                         '</div>' +
                         '<div class="col-2">' +
-                            '<button class="btn btn-light" onclick="decreaseQuantity(' + id + ', ' + expiredItems[id].price + ')"><i class="fas fa-minus"></i></button>' +
-                            '<button class="btn btn-light" onclick="increaseQuantity(' + id + ', ' + expiredItems[id].price + ')"><i class="fas fa-plus"></i></button>' +
+                            '<button class="btn btn-light" onclick="decreaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-minus"></i></button>' +
+                            '<button class="btn btn-light" onclick="increaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-plus"></i></button>' +
                         '</div>' +
                     '</div>'
                 )
