@@ -276,7 +276,7 @@ class InventoryItem
     }
 
     /**
-     * @return string
+     * @return array|string
      */
     public function addItem()
     {
@@ -293,11 +293,14 @@ class InventoryItem
             return $e->getMessage();
         }
 
-        return 200;
+        return [
+            'Message' => 'Item added',
+            'item' => $this->asArray()
+        ];
     }
 
     /**
-     * @return string
+     * @return string|array
      */
     public function updateItem()
     {
@@ -316,7 +319,10 @@ class InventoryItem
                     ]
                 );
 
-            return 200;
+            return [
+                'message' => 'Item updated',
+                'item' => $this->asArray()
+            ];
         } catch (\Exception $e) {
             return $e->getMessage();
         }
