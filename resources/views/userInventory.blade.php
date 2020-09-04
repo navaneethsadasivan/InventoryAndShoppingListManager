@@ -126,7 +126,6 @@
 
         <script>
             document.addEventListener('click', function (e) {
-                console.log(e)
                 if (e.target.nodeName === 'SPAN' || e.target.id === 'addNewItem') {
                     $('.searchElement').val('')
                     $('.searchItems').empty()
@@ -195,8 +194,10 @@
                     },
                     type: 'POST',
                     url: '/postAddItemUserInventory',
-                    data: id,
-                    success: function () {
+                    data: JSON.stringify([{
+                        'itemId': id
+                    }]),
+                    success: function (data) {
                        location.reload()
                     }
                 })
@@ -209,7 +210,9 @@
                     },
                     type: 'POST',
                     url: '/postRemoveItemUserInventory',
-                    data: id,
+                    data: JSON.stringify([{
+                        'itemId': id
+                    }]),
                     success: function () {
                         location.reload()
                     }

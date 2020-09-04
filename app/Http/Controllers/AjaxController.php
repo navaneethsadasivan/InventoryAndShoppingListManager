@@ -149,11 +149,19 @@ class AjaxController extends Controller
     /**
      * Connect to UserInventoryController to get all items in their inventory
      *
+     * @param Request $request
      * @return JsonResponse
      */
-    public function getUserInventory()
+    public function getUserInventory(Request $request)
     {
-        return response()->json(['items' => UserInventoryController::getUserInventory()], 200);
+        $user = null;
+        $test = json_decode($request->getContent());
+        if ($test) {
+            if ($test[0]->user) {
+                $user = $test[0]->user;
+            }
+        }
+        return response()->json(['items' => UserInventoryController::getUserInventory($user)], 200);
     }
 
     /**
@@ -166,8 +174,18 @@ class AjaxController extends Controller
     public function postAddItem(Request $request)
     {
         $response = null;
+        $user = null;
+        $itemId = null;
+        $test = json_decode($request->getContent());
+        if ($test) {
+            if (isset($test[0]->user)) {
+                $user = $test[0]->user;
+            }
+            $itemId = $test[0]->itemId;
+        }
+
         if ($request->getContent()) {
-            $response = UserInventoryController::postAddItem($request->getContent());
+            $response = UserInventoryController::postAddItem($itemId, $user);
         }
         return $response;
     }
@@ -176,23 +194,47 @@ class AjaxController extends Controller
      * Connect to UserInventoryController to remove stock of a single item
      *
      * @param Request $request
-     * @return void|null
+     * @return array
+     * @throws Exception
      */
     public function postRemoveItem(Request $request)
     {
         $response = null;
+        $user = null;
+        $itemId = null;
+        $test = json_decode($request->getContent());
+
+        if ($test) {
+            if (isset($test[0]->user)) {
+                $user = $test[0]->user;
+            }
+            $itemId = $test[0]->itemId;
+        }
+
         if ($request->getContent()) {
-            $response = UserInventoryController::postRemoveItem($request->getContent());
+            $response = UserInventoryController::postRemoveItem($itemId, $user);
         }
         return $response;
     }
 
     /**
      * Connect to UserInventoryController to get previously bought item
+     *
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function getPreviousItem()
+    public function getPreviousItem(Request $request)
     {
-        return response()->json(['prevItems' => UserInventoryController::getPrevItems()], 200);
+        $user = null;
+        $test = json_decode($request->getContent());
+
+        if ($test) {
+            if ($test[0]->user) {
+                $user = $test[0]->user;
+            }
+        }
+
+        return response()->json(['prevItems' => UserInventoryController::getPrevItems($user)], 200);
     }
 
     /**

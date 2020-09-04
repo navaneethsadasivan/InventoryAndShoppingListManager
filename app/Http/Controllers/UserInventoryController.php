@@ -14,9 +14,16 @@ class UserInventoryController extends Controller
     /**
      * @return array
      */
-    public static function getUserInventory()
+    public static function getUserInventory($requestUser)
     {
         $user = Auth::user();
+
+        if ($user === null && $requestUser !== null) {
+            $user = [
+                'id' => $requestUser
+            ];
+        }
+
         $inventory = new Inventory($user['id']);
         return $inventory->getUserInventory();
     }
@@ -26,30 +33,51 @@ class UserInventoryController extends Controller
      * @return mixed
      * @throws Exception
      */
-    public static function postAddItem($item)
+    public static function postAddItem($itemId, $requestUser = null)
     {
         $user = Auth::user();
+
+        if ($user === null && $requestUser !== null) {
+            $user = [
+                'id' => $requestUser
+            ];
+        }
+
         $inventory = new Inventory($user['id']);
-        return $inventory->addStock($item);
+        return $inventory->addStock($itemId);
     }
 
     /**
      * @param int $item
      * @throws Exception
      */
-    public static function postRemoveItem($item)
+    public static function postRemoveItem($itemId, $requestUser)
     {
         $user = Auth::user();
+
+        if ($user === null && $requestUser !== null) {
+            $user = [
+                'id' => $requestUser
+            ];
+        }
+
         $inventory = new Inventory($user['id']);
-        return $inventory->removeStock($item);
+        return $inventory->removeStock($itemId);
     }
 
     /**
      * @return array
      */
-    public static function getPrevItems()
+    public static function getPrevItems($requestUser)
     {
         $user = Auth::user();
+
+        if ($user === null && $requestUser !== null) {
+            $user = [
+                'id' => $requestUser
+            ];
+        }
+
         $inventory = new Inventory($user['id']);
         return $inventory->getPreviousBoughtItems();
     }

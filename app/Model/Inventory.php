@@ -148,6 +148,7 @@ class Inventory
 
     /**
      * @param int $itemId
+     * @return array
      * @throws Exception
      */
     public function removeStock($itemId)
@@ -168,6 +169,13 @@ class Inventory
                             'current_stock' => $inventoryItem->current_stock - 1
                         ]
                 );
+
+                $updatedStock = DB::selectOne('select current_stock from inventory_user where item_id = ' . $itemId . ' and user_id = ' . $this->getUser());
+
+                return [
+                    'item' => $itemId,
+                    'currentStock' => $updatedStock->current_stock
+                ];
             }
         }
     }
@@ -205,7 +213,10 @@ class Inventory
 
         $updatedStock = DB::selectOne('select current_stock from inventory_user where item_id = ' . $itemId . ' and user_id = ' . $this->getUser());
 
-        return $updatedStock->current_stock;
+        return [
+            'Item' => $itemId,
+            'CurrentStock' => $updatedStock->current_stock
+        ];
     }
 
     /**
