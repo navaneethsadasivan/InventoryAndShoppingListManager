@@ -12,19 +12,12 @@ use Illuminate\Support\Facades\Auth;
 class UserInventoryController extends Controller
 {
     /**
+     * @param int $user
      * @return array
      */
-    public static function getUserInventory($requestUser)
+    public static function getUserInventory($user)
     {
-        $user = Auth::user();
-
-        if ($user === null && $requestUser !== null) {
-            $user = [
-                'id' => $requestUser
-            ];
-        }
-
-        $inventory = new Inventory($user['id']);
+        $inventory = new Inventory($user);
         return $inventory->getUserInventory();
     }
 

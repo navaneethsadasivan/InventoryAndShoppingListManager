@@ -152,44 +152,42 @@ class ShoppingList
     }
 
     /**
-     * @param array $previousLists
+     * @param Object $shoppingList
      * @return string[]
      */
-    public function saveHistory($previousLists)
+    public function saveHistory($shoppingList)
     {
         $userInventory = new Inventory($this->getUserIdWithoutFormat());
-        foreach ($previousLists as $index => $prevShoppingList) {
-            $totalItems = 0;
-            $totalPrice = 0.00;
-            $listId = $this->generateListId();
+        $totalPrice = 0;
+        $totalItems = 0;
+        $listId = $this->generateListId();
 
-            foreach ($prevShoppingList as $item => $quantity) {
-                $totalItems += $quantity;
-                $itemPrice = DB::selectOne('select price from inventory_item where id = ' . $item);
-                $totalPrice += $itemPrice->price * $quantity;
-            }
+        foreach ($shoppingList as $item => $quantity) {
+            $totalItems += $quantity;
+            $itemPrice = DB::selectOne('select price from inventory_item where id = ' . $item);
+            $totalPrice += $itemPrice->price * $quantity;
+        }
 
-            DB::table('shopping_list')->insert(
+        DB::table('shopping_list')->insert(
+            [
+                'list_id' => $listId,
+                'user_id' => $this->getUserIdWithoutFormat(),
+                'created_at' => date('Y-m-d H:i:s'),
+                'total_items' => $totalItems,
+                'total_price' => $totalPrice
+            ]
+        );
+
+        foreach ($shoppingList as $item => $quantity) {
+            DB::table('shopping_list_items')->insert(
                 [
-                    'list_id' => $listId,
-                    'user_id' => $this->getUserIdWithoutFormat(),
-                    'created_at' => date('Y-m-d H:i:s'),
-                    'total_items' => $totalItems,
-                    'total_price' => $totalPrice
+                    'shopping_list_id' => $listId,
+                    'item_id' => $item,
+                    'quantity' => $quantity
                 ]
             );
 
-            foreach ($prevShoppingList as $item => $quantity) {
-                DB::table('shopping_list_items')->insert(
-                    [
-                        'shopping_list_id' => $listId,
-                        'item_id' => $item,
-                        'quantity' => $quantity
-                    ]
-                );
-
-                $userInventory->save($item);
-            }
+            $userInventory->save($item);
         }
         return [
             'message' => 'List saved successfully'

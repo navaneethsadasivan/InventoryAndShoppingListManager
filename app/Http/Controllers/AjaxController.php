@@ -58,16 +58,50 @@ class AjaxController extends Controller
     public function postShoppingList(Request $request)
     {
         $data = null;
+        $user = null;
+        $userDetails = Auth::user();
+        $test = json_decode($request->getContent());
+
+        if ($test) {
+            if (isset($test[0]->user)) {
+                $user = $test[0]->user;
+            } else if ($userDetails) {
+                $user = $userDetails['id'];
+            } else {
+                return response()->json(['message' => 'User id is not declared'], 400);
+            }
+        }
+
         if (json_decode($request->getContent())) {
-            $data = ShoppingListController::postShoppingList(json_decode($request->getContent()), Auth::user());
+            $data = ShoppingListController::postShoppingList($test[0]->ListItems, $user);
         }
 
         return response()->json(['message' => $data], 200);
     }
 
-    public function getHistory()
+    /**
+     * Connect to ShoppingListController and retrieve history of shopping lists
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getHistory(Request $request)
     {
-        return response()->json(['history' => ShoppingListController::getShoppingListHistory(Auth::user())]);
+        $user = null;
+        $userDetails = Auth::user();
+        $test = json_decode($request->getContent());
+
+        if (is_null($test) && is_null($userDetails)) {
+            return response()->json(['message' => 'User id is not declared'], 400);
+        } else {
+            if (isset($test[0]->user)) {
+                $user = $test[0]->user;
+            } else if ($userDetails['id']) {
+                $user = $userDetails['id'];
+            }
+        }
+
+        return response()->json(['history' => ShoppingListController::getShoppingListHistory($user)]);
     }
 
     /**
@@ -79,12 +113,26 @@ class AjaxController extends Controller
     public function postSearchItem(Request $request)
     {
         $data = null;
-        if (json_decode($request->getContent())) {
-            $params =  json_decode($request->getContent());
-            $data = InventoryItemController::searchItem($params, Auth::user());
+        $user = null;
+        $userDetails = Auth::user();
+        $test = json_decode($request->getContent());
+
+        if ($test) {
+            if (isset($test[0]->user)) {
+                $user = $test[0]->user;
+            } else if ($userDetails) {
+                $user = $userDetails['id'];
+            } else {
+                return response()->json(['message' => 'User id is not declared'], 400);
+            }
         }
 
-        return response()->json(['data' => $data, 'status' => 200], 200);
+        if (json_decode($request->getContent())) {
+            $params =  json_decode($request->getContent());
+            $data = InventoryItemController::searchItem($params, $user);
+        }
+
+        return response()->json(['data' => $data], 200);
     }
 
     /**
@@ -155,12 +203,19 @@ class AjaxController extends Controller
     public function getUserInventory(Request $request)
     {
         $user = null;
+        $userDetails = Auth::user();
         $test = json_decode($request->getContent());
-        if ($test) {
-            if ($test[0]->user) {
+
+        if (is_null($test) && is_null($userDetails)) {
+            return response()->json(['message' => 'User Id is not declared'], 400);
+        } else {
+            if (isset($test[0]->user)) {
                 $user = $test[0]->user;
+            } elseif ($userDetails){
+                $user = $userDetails['id'];
             }
         }
+
         return response()->json(['items' => UserInventoryController::getUserInventory($user)], 200);
     }
 

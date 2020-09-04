@@ -23,22 +23,21 @@ class ShoppingListController extends Controller
 
     /**
      * @param object $data
-     * @param Authenticatable $userDetails
+     * @param int $userId
      * @return string[]
      */
-    public static function postShoppingList($data, $userDetails)
+    public static function postShoppingList($data, $userId)
     {
-        $userId = $userDetails['id'];
         $shoppingList = new ShoppingList($userId);
         return $shoppingList->saveHistory($data);
     }
 
     /**
-     * @param Authenticatable $userDetails
+     * @param int $userId
+     * @return array
      */
-    public static function getShoppingListHistory(Authenticatable $userDetails)
+    public static function getShoppingListHistory($userId)
     {
-        $userId = $userDetails['id'];
         $shoppingList = new ShoppingList($userId);
         return $shoppingList->getHistory();
     }

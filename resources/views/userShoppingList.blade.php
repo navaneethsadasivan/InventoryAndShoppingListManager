@@ -217,7 +217,7 @@
                     type: 'GET',
                     url: '/getExpiringItems',
                     success: function (data) {
-                        if (data.expiringItems) {
+                        if (data.expiringItems.length !== 0) {
                             renderExpiredItems(data.expiringItems)
                         } else {
                             $('.expiredItems').append(
@@ -314,29 +314,39 @@
             }
 
             function finalSubmit() {
-                $.ajax({
-                    headers : {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    type: 'POST',
-                    url: '/postShoppingList',
-                    data: JSON.stringify({0: historyItems}),
-                    success: function (data) {
-                        $('.finalPrice').val(0)
-                        $('#searchElement').val('')
-                        $.each(historyItems, function (id, quantity) {
-                            $('#' + id).remove()
-                        })
-                        $('.defaultList').empty().append(
-                            '<p>No items in list</p>'
-                        )
-                        $('.alert-notification').append(
-                            '<div class="alert alert-success">List Saved</div>'
-                        ).delay(3000).slideUp(200, function () {
-                            $(this).alert('close')
-                        })
-                    }
-                })
+                if (addItems === 0) {
+                    $('.alert-notification').append(
+                        '<div class="alert alert-danger">No items in list</div>'
+                    ).delay(3000).slideUp(200, function () {
+                        $(this).alert('close')
+                    })
+                } else {
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        type: 'POST',
+                        url: '/postShoppingList',
+                        data: JSON.stringify([{
+                            'ListItems': historyItems
+                        }]),
+                        success: function (data) {
+                            $('.finalPrice').val(0)
+                            $('#searchElement').val('')
+                            $.each(historyItems, function (id, quantity) {
+                                $('#' + id).remove()
+                            })
+                            $('.defaultList').empty().append(
+                                '<p>No items in list</p>'
+                            )
+                            $('.alert-notification').append(
+                                '<div class="alert alert-success">List Saved</div>'
+                            ).delay(3000).slideUp(200, function () {
+                                $(this).alert('close')
+                            })
+                        }
+                    })
+                }
             }
 
             let item = null;
