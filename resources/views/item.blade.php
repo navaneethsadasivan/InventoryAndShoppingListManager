@@ -11,6 +11,7 @@
                 background-color: #2a9055;
                 padding: 5px;
             }
+
             .links > a {
                 color: #ced4da;
                 padding: 0 25px;
@@ -20,6 +21,7 @@
                 text-decoration: none;
                 text-transform: uppercase;
             }
+
             .page-title {
                 color: #ced4da;
                 text-align: left;
@@ -31,6 +33,7 @@
                 text-transform: uppercase;
                 width: 50%;
             }
+
             .border-box {
                 border: solid 1px black;
                 border-radius: 20px;
@@ -39,17 +42,60 @@
                 background-color: #a1cbef;
                 width: 25%;
             }
+
             .items {
                 width: 100%;
             }
+
             .modal {
                 padding-top: 100px;
             }
+
             .modal-header {
                 background-color: #2a9055;
             }
+
             .modal-header>h3 {
                 color: white;
+            }
+
+            .menu-icon {
+                color: #ced4da;
+                font-size: 30px;
+            }
+
+            .side-nav {
+                height: 100%;
+                width: 0;
+                position: fixed;
+                z-index: 1;
+                top: 0;
+                left: 0;
+                background-color: #2a9055;
+                overflow-x: hidden;
+                transition: 0.5s;
+                padding-top: 60px;
+            }
+
+            .side-nav a {
+                padding: 8px 8px 8px 32px;
+                text-decoration: none;
+                font-size: 25px;
+                color: black;
+                display: block;
+                transition: 0.3s;
+            }
+
+            .side-nav a:hover {
+                color: #f1f1f1;
+            }
+
+            .side-nav .closebtn {
+                position: absolute;
+                top: 0;
+                right: 25px;
+                font-size: 36px;
+                margin-left: 50px;
             }
         </style>
     </head>
@@ -60,63 +106,75 @@
         @extends('layouts.app')
 
         @section('content')
-            @if (Route::has('login'))
-                <div class="header row">
-                    <div class="page-title col-6">
-                        <p>Items</p>
-                    </div>
-                    <div class="top-right links col-6">
-                        @auth
-                            <a href="{{url('/')}}">Home</a>
-                            <a href="{{ url('/home') }}">{{\Illuminate\Support\Facades\Auth::user()->name}}</a>
-                        @else
-                            <a href="{{ route('login') }}">Login</a>
-
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}">Register</a>
-                            @endif
-                        @endauth
-                    </div>
-                </div>
-            @endif
-            <div class="d-flex p-4 justify-content-end">
-                <button id="addItem" class="btn btn-success" data-toggle="modal" data-target=".modal">
-                    <i class="fas fa-plus"></i>Add New Item
-                </button>
+            <div id="sideNav" class="side-nav">
+                <a href="javascript:void(0)" class="closebtn" onclick="closeNavBar()">&times;</a>
+                <a href="{{route('welcome')}}">Home</a>
+                <a href="{{route('inventory')}}">Inventory</a>
+                <a href="{{route('shoppingList')}}">Shopping List</a>
+                <a href="{{route('generate')}}">Generate List [Beta]</a>
             </div>
-            <div class="items d-flex justify-content-around flex-wrap"></div>
-
-            <div class="modal fade" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3></h3>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true" onclick="clear()">&times;</span>
-                            </button>
-                        </div>
-                        <div class="alert-notification"></div>
-                        <div class="modal-body">
-                            <div class="d-flex row p-5">
-                                <div class="d-flex p-2 col-12 justify-content-between">
-                                    <label><strong>Name</strong></label>
-                                    <input type="text" class="name" placeholder="Enter item name">
-                                </div>
-                                <div class="d-flex p-2 col-12 justify-content-between">
-                                    <label><strong>Price</strong></label>
-                                    <input type="text" class="price" placeholder="Enter item price">
-                                </div>
-                                <div class="d-flex p-2 col-12 justify-content-between">
-                                    <label><strong>Category</strong></label>
-                                    <input type="text" class="type" placeholder="Enter item type">
-                                </div>
-                                <div class="d-flex p-2 col-12 justify-content-between">
-                                    <label><strong>Use By (in weeks)</strong></label>
-                                    <input type="text" class="useBy" placeholder="Enter item use by">
-                                </div>
+            <div id="main-body">
+                @if (Route::has('login'))
+                    <div class="header row">
+                        <div class="page-title col-6">
+                            <div class="d-flex align-items-center">
+                                <button class="btn menu-icon" onclick="openNavBar()"><i class="fas fa-bars fa-2x"></i></button>
+                                <p>Items</p>
                             </div>
                         </div>
-                        <div class="modal-footer">
+                        <div class="top-right links col-6">
+                            @auth
+                                <a href="{{url('/')}}">Home</a>
+                                <a href="{{ url('/home') }}">{{\Illuminate\Support\Facades\Auth::user()->name}}</a>
+                            @else
+                                <a href="{{ route('login') }}">Login</a>
+
+                                @if (Route::has('register'))
+                                    <a href="{{ route('register') }}">Register</a>
+                                @endif
+                            @endauth
+                        </div>
+                    </div>
+                @endif
+                <div class="d-flex p-4 justify-content-end">
+                    <button id="addItem" class="btn btn-success" data-toggle="modal" data-target=".modal">
+                        <i class="fas fa-plus"></i>Add New Item
+                    </button>
+                </div>
+                <div class="items d-flex justify-content-around flex-wrap"></div>
+
+                <div class="modal fade" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3></h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true" onclick="clear()">&times;</span>
+                                </button>
+                            </div>
+                            <div class="alert-notification"></div>
+                            <div class="modal-body">
+                                <div class="d-flex row p-5">
+                                    <div class="d-flex p-2 col-12 justify-content-between">
+                                        <label><strong>Name</strong></label>
+                                        <input type="text" class="name" placeholder="Enter item name">
+                                    </div>
+                                    <div class="d-flex p-2 col-12 justify-content-between">
+                                        <label><strong>Price</strong></label>
+                                        <input type="text" class="price" placeholder="Enter item price">
+                                    </div>
+                                    <div class="d-flex p-2 col-12 justify-content-between">
+                                        <label><strong>Category</strong></label>
+                                        <input type="text" class="type" placeholder="Enter item type">
+                                    </div>
+                                    <div class="d-flex p-2 col-12 justify-content-between">
+                                        <label><strong>Use By (in weeks)</strong></label>
+                                        <input type="text" class="useBy" placeholder="Enter item use by">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -139,6 +197,16 @@
                     )
                 }
             })
+
+            function openNavBar() {
+                $('#sideNav').css('width', "250px")
+                $('#main-body').css('marginLeft', "250px")
+            }
+
+            function closeNavBar() {
+                $('#sideNav').css('width', 0)
+                $('#main-body').css('marginLeft', 0)
+            }
 
             let itemList = null
             let itemToEdit = null

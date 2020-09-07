@@ -17,19 +17,19 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 Route::get('/item', function () {
     return view('item');
-});
+})->name('item');
 
 Route::get('/generate', function () {
    return view('generateShoppingList');
-});
+})->name('generate');
 
 Route::get('/list', function () {
     return view('userShoppingList');
-});
+})->name('shoppingList');
 
 Route::get('/search', function () {
     return view('search');
@@ -37,7 +37,7 @@ Route::get('/search', function () {
 
 Route::get('/inventory', function () {
     return view ('userInventory')->with('user', Auth::check());
-});
+})->name('inventory');
 
 Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
 

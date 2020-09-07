@@ -60,11 +60,47 @@
             .modal {
                 padding-top: 100px;
             }
+
             .modal-header {
                 background-color: #2a9055;
             }
+
             .modal-header>h3 {
                 color: white;
+            }
+
+            .side-nav {
+                height: 100%;
+                width: 0;
+                position: fixed;
+                z-index: 1;
+                top: 0;
+                left: 0;
+                background-color: #2a9055;
+                overflow-x: hidden;
+                transition: 0.5s;
+                padding-top: 60px;
+            }
+
+            .side-nav a {
+                padding: 8px 8px 8px 32px;
+                text-decoration: none;
+                font-size: 25px;
+                color: black;
+                display: block;
+                transition: 0.3s;
+            }
+
+            .side-nav a:hover {
+                color: #f1f1f1;
+            }
+
+            .side-nav .closebtn {
+                position: absolute;
+                top: 0;
+                right: 25px;
+                font-size: 36px;
+                margin-left: 50px;
             }
         </style>
     </head>
@@ -75,125 +111,137 @@
         @extends('layouts.app')
 
         @section('content')
-            @if (Route::has('login'))
-                <div class="header row">
-                    <div class="page-title col-6">
-                        <p>Shopping List</p>
-                    </div>
-                    <div class="top-right links col-6">
-                        @auth
-                            <a href="{{url('/')}}">Home</a>
-                            <a href="{{ url('/home') }}">{{\Illuminate\Support\Facades\Auth::user()->name}}</a>
-                        @else
-                            <a href="{{ route('login') }}">Login</a>
-
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}">Register</a>
-                            @endif
-                        @endauth
-                    </div>
-                </div>
-            @endif
-
-            <div class="alert-notification"></div>
-
-            @auth
-                <div class="d-flex mb-3 justify-content-end">
-                    <button class="btn history" onclick="getHistory()">
-                        <i class="fas fa-paper-plane mr-2"></i>
-                        <strong>View History</strong>
-                    </button>
-                </div>
-                <div class="d-flex justify-content-around">
-                    <div class="col-8">
-                        <div class="d-flex align-items-center justify-content-center p-5">
-                            <input id="searchElement" class="p-2 mr-2" type="text" placeholder="Type in the item">
-                            <button onclick="search()" class="btn btn-primary"><i class="fas fa-search"></i></button>
-                        </div>
-                        <div class="searchRender d-flex justify-content-center flex-wrap"></div>
-                        <div class="d-flex align-items-center justify-content-center my-4">
-                            <div class="listItems">
-                                <div class="d-flex border">
-                                    <div class="col-6">
-                                        <p>Name</p>
-                                    </div>
-                                    <div class="col-2">
-                                        <p>Quantity</p>
-                                    </div>
-                                    <div class="col-2">
-                                        <p>Price</p>
-                                    </div>
-                                    <div class="col-2">
-                                        <p>Action</p>
-                                    </div>
-                                </div>
-                                <div class="defaultList d-flex justify-content-around border">
-                                    <p>No items in list</p>
-                                </div>
+            <div id="sideNav" class="side-nav">
+                <button class="btn closebtn" onclick="closeNavBar()">&times;</button>
+                <a href="{{route('welcome')}}">Home</a>
+                <a href="{{route('item')}}">Items</a>
+                <a href="{{route('inventory')}}">Inventory</a>
+                <a href="{{route('generate')}}">Generate List [Beta]</a>
+            </div>
+            <div id="main-body">
+                @if (Route::has('login'))
+                    <div class="header row">
+                        <div class="page-title col-6">
+                            <div class="d-flex align-items-center">
+                                <button class="btn menu-icon" onclick="openNavBar()"><i class="fas fa-bars fa-2x"></i></button>
+                                <p>Shopping List</p>
                             </div>
                         </div>
-                        <div class="d-flex align-items-center justify-content-center my-4">
-                            <div class="d-flex justify-content-end p-2">
-                                <span>Total Price(&#163): </span>
-                                <input class="finalPrice" value="0">
-                            </div>
-                            <button id="final-submit" class="btn btn-success" onclick="finalSubmit()">Confirm</button>
+                        <div class="top-right links col-6">
+                            @auth
+                                <a href="{{url('/')}}">Home</a>
+                                <a href="{{ url('/home') }}">{{\Illuminate\Support\Facades\Auth::user()->name}}</a>
+                            @else
+                                <a href="{{ route('login') }}">Login</a>
+
+                                @if (Route::has('register'))
+                                    <a href="{{ route('register') }}">Register</a>
+                                @endif
+                            @endauth
                         </div>
                     </div>
-                    <div class="d-flex">
-                        <div class="container">
-                            <div class="row">
-                                <div class="d-flex col-4 border-left">
-                                    <div class="container">
-                                        <div class="row">
-                                            <h3>Expired Items</h3>
+                @endif
+
+                <div class="alert-notification"></div>
+
+                @auth
+                    <div class="d-flex mb-3 justify-content-end">
+                        <button class="btn history" onclick="getHistory()">
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            <strong>View History</strong>
+                        </button>
+                    </div>
+                    <div class="d-flex justify-content-around">
+                        <div class="col-8">
+                            <div class="d-flex align-items-center justify-content-center p-5">
+                                <input id="searchElement" class="p-2 mr-2" type="text" placeholder="Type in the item">
+                                <button onclick="search()" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                            </div>
+                            <div class="searchRender d-flex justify-content-center flex-wrap"></div>
+                            <div class="d-flex align-items-center justify-content-center my-4">
+                                <div class="listItems">
+                                    <div class="d-flex border">
+                                        <div class="col-6">
+                                            <p>Name</p>
                                         </div>
-                                        <div class="row">
-                                            <div class="expiredItems"></div>
+                                        <div class="col-2">
+                                            <p>Quantity</p>
                                         </div>
+                                        <div class="col-2">
+                                            <p>Price</p>
+                                        </div>
+                                        <div class="col-2">
+                                            <p>Action</p>
+                                        </div>
+                                    </div>
+                                    <div class="defaultList d-flex justify-content-around border">
+                                        <p>No items in list</p>
                                     </div>
                                 </div>
                             </div>
-                            <hr>
-                            <div class="row">
-                                <div class="d-flex col-4 border-left">
-                                    <div class="container">
-                                        <div class="row">
-                                            <h3>Previously Bought Items</h3>
+                            <div class="d-flex align-items-center justify-content-center my-4">
+                                <div class="d-flex justify-content-end p-2">
+                                    <span>Total Price(&#163): </span>
+                                    <input class="finalPrice" value="0">
+                                </div>
+                                <button id="final-submit" class="btn btn-success" onclick="finalSubmit()">Confirm</button>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="d-flex col-4 border-left">
+                                        <div class="container">
+                                            <div class="row">
+                                                <h3>Expired Items</h3>
+                                            </div>
+                                            <div class="row">
+                                                <div class="expiredItems"></div>
+                                            </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="prevItems"></div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="d-flex col-4 border-left">
+                                        <div class="container">
+                                            <div class="row">
+                                                <h3>Previously Bought Items</h3>
+                                            </div>
+                                            <div class="row">
+                                                <div class="prevItems"></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="modal fade" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h3>Shopping History</h3>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" onclick="clear()">&times;</span>
-                                </button>
-                            </div>
-                            <div class="alert-notification"></div>
-                            <div class="modal-body">
-                                <div class="listHistory d-flex flex-wrap"></div>
-                            </div>
-                            <div class="modal-footer">
+                    <div class="modal fade" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3>Shopping History</h3>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true" onclick="clear()">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="alert-notification"></div>
+                                <div class="modal-body">
+                                    <div class="listHistory d-flex flex-wrap"></div>
+                                </div>
+                                <div class="modal-footer">
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            @else
-                <div class="alert alert-danger">
-                    You must be logged in to access this feature
-                </div>
-            @endauth
+                @else
+                    <div class="alert alert-danger">
+                        You must be logged in to access this feature
+                    </div>
+                @endauth
+            </div>
         @endsection
         <script>
             document.addEventListener('click', function (e) {
@@ -201,6 +249,16 @@
                     $('.listHistory').empty()
                 }
             })
+
+            function openNavBar() {
+                $('#sideNav').css('width', "250px")
+                $('#main-body').css('marginLeft', "250px")
+            }
+
+            function closeNavBar() {
+                $('#sideNav').css('width', 0)
+                $('#main-body').css('marginLeft', 0)
+            }
 
             let historyItems = {}
             let expiredItems = {}

@@ -78,10 +78,11 @@ class AprioriTrain
 
         $this->train();
 
+//        return $this->testSamples;
 //        return $this->associate();
-        return $this->test($this->associate());
+//        return $this->test($this->associate());
 
-        $generatedList = $this->buildList($this->associate(), $inventory->getExpiredItems());
+        $generatedList = $this->buildList($this->associate());
 
         $newList = [];
         foreach ($generatedList as $index => $itemId) {
@@ -97,15 +98,11 @@ class AprioriTrain
         return $arrayCount/100;
     }
 
-    protected function buildList($mlList, $expiredItems)
+    protected function buildList($mlList, $expiredItems = null)
     {
         $data = [];
         $expired = [];
         $referenceItems = [];
-
-        foreach ($expiredItems as $expiredItemId => $expiredItemDetails) {
-            $expired[] = $expiredItemId;
-        }
 
         foreach ($mlList as $mlData) {
             if ($mlData['confidence'] >= 0.7 && $mlData['support'] >= 0.15) {
@@ -128,9 +125,15 @@ class AprioriTrain
             }
         }
 
-        foreach($expired as $expiredId) {
-            if (!in_array($expiredId, $data)) {
-                $data[] = $expiredId;
+        if ($expiredItems !== null) {
+            foreach ($expiredItems as $expiredItemId => $expiredItemDetails) {
+                $expired[] = $expiredItemId;
+            }
+
+            foreach ($expired as $expiredId) {
+                if (!in_array($expiredId, $data)) {
+                    $data[] = $expiredId;
+                }
             }
         }
 

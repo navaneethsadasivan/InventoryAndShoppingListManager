@@ -50,6 +50,45 @@
             .modal-header {
                 background-color: #2a9055;
             }
+
+            .menu-icon {
+                color: #ced4da;
+                font-size: 30px;
+            }
+
+            .side-nav {
+                height: 100%;
+                width: 0;
+                position: fixed;
+                z-index: 1;
+                top: 0;
+                left: 0;
+                background-color: #2a9055;
+                overflow-x: hidden;
+                transition: 0.5s;
+                padding-top: 60px;
+            }
+
+            .side-nav a {
+                padding: 8px 8px 8px 32px;
+                text-decoration: none;
+                font-size: 25px;
+                color: black;
+                display: block;
+                transition: 0.3s;
+            }
+
+            .side-nav a:hover {
+                color: #f1f1f1;
+            }
+
+            .side-nav .closebtn {
+                position: absolute;
+                top: 0;
+                right: 25px;
+                font-size: 36px;
+                margin-left: 50px;
+            }
         </style>
     </head>
     <body onload="getData()">
@@ -59,69 +98,81 @@
         @extends('layouts.app')
 
         @section('content')
-            @if (Route::has('login'))
-                <div class="header row">
-                    <div class="page-title col-6">
-                        <p>Inventory</p>
-                    </div>
-                    <div class="top-right links col-6">
-                        @auth
-                            <a href="{{url('/')}}">Home</a>
-                            <a href="{{ url('/home') }}">{{\Illuminate\Support\Facades\Auth::user()->name}}</a>
-                        @else
-                            <a href="{{ route('login') }}">Login</a>
-
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}">Register</a>
-                            @endif
-                        @endauth
-                    </div>
-                </div>
-                @auth
-                    <div class="d-flex justify-content-end align-items-center">
-                        <button id="addNewItem" class="btn" data-toggle="modal" data-target=".modal">
-                            <i class="fas fa-plus"></i>Add new item
-                        </button>
-                    </div>
-
-                    <div class="d-flex justify-content-around mt-4">
-                        <div class="col-8">
-                            <h3>Current Inventory</h3>
-                            <div class="items d-flex justify-content-start flex-wrap"></div>
+            <div id="sideNav" class="side-nav">
+                <button class="btn btn-dark closebtn" onclick="closeNavBar()">&times;</button>
+                <a href="{{route('welcome')}}">Home</a>
+                <a href="{{route('item')}}">Items</a>
+                <a href="{{route('shoppingList')}}">Shopping List</a>
+                <a href="{{route('generate')}}">Generate List [Beta]</a>
+            </div>
+            <div id="main-body">
+                @if (Route::has('login'))
+                    <div class="header row">
+                        <div class="page-title col-6">
+                            <div class="d-flex align-items-center">
+                                <button class="btn menu-icon" onclick="openNavBar()"><i class="fas fa-bars fa-2x"></i></button>
+                                <p>Inventory</p>
+                            </div>
                         </div>
-                        <div class="col-4 border-left">
-                            <h3>Previously Bought Items</h3>
-                            <div class="prevItems d-flex justify-content-start flex-wrap"></div>
+                        <div class="top-right links col-6">
+                            @auth
+                                <a href="{{url('/')}}">Home</a>
+                                <a href="{{ url('/home') }}">{{\Illuminate\Support\Facades\Auth::user()->name}}</a>
+                            @else
+                                <a href="{{ route('login') }}">Login</a>
+
+                                @if (Route::has('register'))
+                                    <a href="{{ route('register') }}">Register</a>
+                                @endif
+                            @endauth
                         </div>
                     </div>
+                    @auth
+                        <div class="d-flex justify-content-end align-items-center">
+                            <button id="addNewItem" class="btn" data-toggle="modal" data-target=".modal">
+                                <i class="fas fa-plus"></i>Add new item
+                            </button>
+                        </div>
 
-                    <div class="modal fade" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h3>Add Item</h3>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="d-flex row align-items-center justify-content-center p-5">
-                                        <input class="searchElement p-2 mr-2" type="text" placeholder="Type in the item">
-                                        <button onclick="search()" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                        <div class="d-flex justify-content-around mt-4">
+                            <div class="col-8">
+                                <h3>Current Inventory</h3>
+                                <div class="items d-flex justify-content-start flex-wrap"></div>
+                            </div>
+                            <div class="col-4 border-left">
+                                <h3>Previously Bought Items</h3>
+                                <div class="prevItems d-flex justify-content-start flex-wrap"></div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h3>Add Item</h3>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
                                     </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <div class="searchItems d-flex flex-wrap"></div>
+                                    <div class="modal-body">
+                                        <div class="d-flex row align-items-center justify-content-center p-5">
+                                            <input class="searchElement p-2 mr-2" type="text" placeholder="Type in the item">
+                                            <button onclick="search()" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <div class="searchItems d-flex flex-wrap"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @else
-                    <div class="alert alert-danger">
-                        You must be logged in to access this feature
-                    </div>
-                @endauth
-            @endif
+                    @else
+                        <div class="alert alert-danger">
+                            You must be logged in to access this feature
+                        </div>
+                    @endauth
+                @endif
+            </div>
         @endsection
 
         <script>
@@ -131,6 +182,16 @@
                     $('.searchItems').empty()
                 }
             })
+
+            function openNavBar() {
+                $('#sideNav').css('width', "250px")
+                $('#main-body').css('marginLeft', "250px")
+            }
+
+            function closeNavBar() {
+                $('#sideNav').css('width', 0)
+                $('#main-body').css('marginLeft', 0)
+            }
 
             let itemList = null
             let previousBoughtItems = null
