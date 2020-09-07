@@ -262,9 +262,25 @@ class InventoryItem
                     }
                 }
             } elseif ($requestDetails->type === 2) {
+                $userInventory = new Inventory($user);
+                $previouslyBoughtItems = $userInventory->getPreviousBoughtItems();
+                $expiredItems = $userInventory->getExpiredItems();
+
                 foreach ($generalSearch as $generalIndex => $generalSearchItemDetails) {
                     foreach ($requestDetails->addedItems as $itemId => $quantity) {
                         if ($generalSearchItemDetails->id === (int)$itemId) {
+                            unset($generalSearch[$generalIndex]);
+                        }
+                    }
+
+                    foreach ($previouslyBoughtItems as $prevBoughtIndex => $prevBoughtDetails) {
+                        if ($generalSearchItemDetails->id === $prevBoughtDetails[0]->id) {
+                            unset($generalSearch[$generalIndex]);
+                        }
+                    }
+
+                    foreach ($expiredItems as $expiredIndex => $expiredDetails) {
+                        if ($generalSearchItemDetails->id === $expiredDetails['itemDetails']->id) {
                             unset($generalSearch[$generalIndex]);
                         }
                     }
