@@ -37,7 +37,7 @@ class AprioriTrain
         $this->userId = $userId;
     }
 
-    protected function train($sup = 0.1, $conf = 0.5)
+    protected function train($sup = 0.27, $conf = 0.5)
     {
         $this->associator = new Apriori($support = $sup, $confidence = $conf);
         $this->associator->train($this->testSamples, $this->testLabels);
@@ -79,7 +79,7 @@ class AprioriTrain
         $this->train();
 
 //        return $this->testSamples;
-//        return $this->associate();
+        return $this->associate();
 //        return $this->test($this->associate());
 
         $generatedList = $this->buildList($this->associate());
