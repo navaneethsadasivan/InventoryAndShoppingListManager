@@ -31,10 +31,6 @@ Route::get('/list', function () {
     return view('userShoppingList');
 })->name('shoppingList');
 
-Route::get('/search', function () {
-    return view('search');
-});
-
 Route::get('/inventory', function () {
     return view ('userInventory')->with('user', Auth::check());
 })->name('inventory');
@@ -56,10 +52,6 @@ Route::get(
 Route::get(
     '/getList', 'AjaxController@getShoppingList'
 )->name('getList');
-
-Route::get(
-    '/getApriori', 'AjaxController@getApriori'
-)->name('getApriori');
 
 Route::post(
     '/postShoppingList', 'AjaxController@postShoppingList'

@@ -114,6 +114,14 @@
                 margin-left: 50px;
             }
 
+            .side-nav-header {
+                position: absolute;
+                top: 5px;
+                left: 23px;
+                font-size: 36px;
+                margin-right: 50px;
+            }
+
             .m-b-md {
                 margin-bottom: 30px;
             }
@@ -123,11 +131,12 @@
         @extends('layouts.app')
 
         <div id="sideNav" class="side-nav">
-            <button class="btn closebtn" onclick="closeNavBar()">&times;</button>
-            <a href="{{route('item')}}">Items</a>
-            <a href="{{route('inventory')}}">Inventory</a>
-            <a href="{{route('shoppingList')}}">Shopping List</a>
-            <a href="{{route('generate')}}">Generate List [Beta]</a>
+            <p class="side-nav-header">Home</p>
+            <button class="btn closebtn" onclick="closeNavBar()"><i class="fas fa-times"></i></button>
+            <a href="{{route('item')}}">Items<i class="fas fa-database p-2"></i></a>
+            <a href="{{route('inventory')}}">Inventory<i class="fas fa-warehouse p-2"></i></a>
+            <a href="{{route('shoppingList')}}">Shopping List<i class="fas fa-clipboard-check p-2"></i></a>
+            <a href="{{route('generate')}}">Generate List [Beta]<i class="fas fa-laptop-code p-2"></i></a>
         </div>
         <div id="main-body">
             @if (Route::has('login'))
@@ -149,7 +158,7 @@
 
             <div class="content full-height flex-center">
                 <div class="title m-b-md">
-                    Shopping List Generator
+                    Shopping and Inventory Manager
                 </div>
             </div>
         </div>

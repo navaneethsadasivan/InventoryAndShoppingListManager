@@ -107,11 +107,11 @@
 
         @section('content')
             <div id="sideNav" class="side-nav">
-                <a href="javascript:void(0)" class="closebtn" onclick="closeNavBar()">&times;</a>
-                <a href="{{route('welcome')}}">Home</a>
-                <a href="{{route('inventory')}}">Inventory</a>
-                <a href="{{route('shoppingList')}}">Shopping List</a>
-                <a href="{{route('generate')}}">Generate List [Beta]</a>
+                <button class="btn closebtn" onclick="closeNavBar()"><i class="fas fa-times"></i></button>
+                <a href="{{route('welcome')}}">Home<i class="fas fa-home p-2"></i></a>
+                <a href="{{route('inventory')}}">Inventory<i class="fas fa-warehouse p-2"></i></a>
+                <a href="{{route('shoppingList')}}">Shopping List<i class="fas fa-clipboard-check p-2"></i></a>
+                <a href="{{route('generate')}}">Generate List [Beta]<i class="fas fa-laptop-code p-2"></i></a>
             </div>
             <div id="main-body">
                 @if (Route::has('login'))
@@ -124,7 +124,6 @@
                         </div>
                         <div class="top-right links col-6">
                             @auth
-                                <a href="{{url('/')}}">Home</a>
                                 <a href="{{ url('/home') }}">{{\Illuminate\Support\Facades\Auth::user()->name}}</a>
                             @else
                                 <a href="{{ route('login') }}">Login</a>
