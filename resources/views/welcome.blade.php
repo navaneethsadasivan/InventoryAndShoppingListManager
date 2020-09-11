@@ -35,16 +35,6 @@
                 justify-content: center;
             }
 
-            .position-ref {
-                position: relative;
-            }
-
-            .top-right {
-                position: absolute;
-                right: 10px;
-                top: 18px;
-            }
-
             .top-left {
                 position: absolute;
                 left: 10px;
@@ -125,6 +115,24 @@
             .m-b-md {
                 margin-bottom: 30px;
             }
+
+            @media only screen and (max-width: 600px) {
+                .title {
+                    font-size: 40px;
+                }
+
+                .side-nav-header {
+                    font-size: 12px;
+                }
+
+                .side-nav a {
+                    font-size: 10px;
+                }
+
+                .links > a {
+                    font-size: 10px;
+                }
+            }
         </style>
     </head>
     <body>
@@ -164,9 +172,16 @@
         </div>
 
         <script>
+            const width = window.matchMedia("(max-width: 600px)")
+
             function openNavBar() {
                 $('#sideNav').css('width', "250px")
                 $('#main-body').css('marginLeft', "250px")
+
+                if (width.matches) {
+                    $('#sideNav').css('width', "100px")
+                    $('#main-body').css('marginLeft', "100px")
+                }
             }
 
             function closeNavBar() {

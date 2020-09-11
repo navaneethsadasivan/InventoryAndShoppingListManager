@@ -40,7 +40,7 @@
                 padding: 5px;
                 margin: 5px;
                 background-color: #a1cbef;
-                width: 25%;
+                width: 400px;
             }
 
             .items {

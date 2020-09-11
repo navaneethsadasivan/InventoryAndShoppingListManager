@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -45,8 +46,10 @@ class LoginController extends Controller
      * Logout the user that is currently active
      *
      * @param Request $request
+     * @return RedirectResponse
      */
     public function logout(Request $request) {
         Auth::logout();
+        return \redirect()->route('welcome');
     }
 }
