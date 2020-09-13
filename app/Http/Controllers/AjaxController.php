@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 use Exception;
+use http\Env\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class AjaxController
@@ -12,6 +14,57 @@ use Illuminate\Support\Facades\Auth;
  */
 class AjaxController extends Controller
 {
+    /**
+     * @var null/int
+     */
+    protected $user = null;
+
+    /**
+     * @return null
+     */
+    protected function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param int $user
+     * @return $this
+     */
+    protected function setUser(int $user)
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    /**
+     * @param Request $request
+     * @return string[]
+     */
+    protected function authorizeUser(Request $request)
+    {
+        $user = null;
+        if (Auth::user()) {
+            $user = Auth::user();
+            $this->setUser($user['id']);
+            return null;
+        } else if ($request->headers->get('Api-Token')) {
+            $user = DB::selectOne('select * from users where api_token = "' . $request->headers->get('Api-Token') . '"');
+            if ($user) {
+                $this->setUser($user->id);
+                return null;
+            } else {
+
+                return [
+                    'Message' => 'User API token invalid'
+                ];
+            }
+        }
+        return [
+            'Message' => 'No API token defined',
+        ];
+    }
+
     /**
      * Connect InventoryItemController to get all items in the database
      *
@@ -199,21 +252,11 @@ class AjaxController extends Controller
      */
     public function getUserInventory(Request $request)
     {
-        $user = null;
-        $userDetails = Auth::user();
-        $test = json_decode($request->getContent());
-
-        if (is_null($test) && is_null($userDetails)) {
-            return response()->json(['message' => 'User Id is not declared'], 400);
-        } else {
-            if (isset($test[0]->user)) {
-                $user = $test[0]->user;
-            } elseif ($userDetails){
-                $user = $userDetails['id'];
-            }
+        $errorMessage = $this->authorizeUser($request);
+        if ($errorMessage) {
+            return response()->json($errorMessage, 200);
         }
-
-        return response()->json(['items' => UserInventoryController::getUserInventory($user)], 200);
+        return response()->json(['items' => UserInventoryController::getUserInventory($this->getUser())], 200);
     }
 
     /**
@@ -226,19 +269,20 @@ class AjaxController extends Controller
     public function postAddItem(Request $request)
     {
         $response = null;
-        $user = null;
-        $itemId = null;
-        $test = json_decode($request->getContent());
-        if ($test) {
-            if (isset($test[0]->user)) {
-                $user = $test[0]->user;
+        $errorMessage = $this->authorizeUser($request);
+
+        if ($errorMessage) {
+            $response = response()->json($errorMessage, 200);
+        } else {
+            $requestBody = json_decode($request->getContent());
+            if (isset($requestBody[0]->itemId)) {
+                $itemId = $requestBody[0]->itemId;
+                $response = UserInventoryController::postAddItem($itemId, $this->getUser());
+            } else {
+                $response = response()->json(['Message' => 'No item declared'], 200);
             }
-            $itemId = $test[0]->itemId;
         }
 
-        if ($request->getContent()) {
-            $response = UserInventoryController::postAddItem($itemId, $user);
-        }
         return $response;
     }
 
@@ -246,26 +290,27 @@ class AjaxController extends Controller
      * Connect to UserInventoryController to remove stock of a single item
      *
      * @param Request $request
-     * @return array
+     * @return array|JsonResponse
      * @throws Exception
      */
     public function postRemoveItem(Request $request)
     {
         $response = null;
-        $user = null;
         $itemId = null;
-        $test = json_decode($request->getContent());
+        $errorMessage = $this->authorizeUser($request);
 
-        if ($test) {
-            if (isset($test[0]->user)) {
-                $user = $test[0]->user;
+        if ($errorMessage) {
+            $response = response()->json($errorMessage, 200);
+        } else {
+            $requestBody = json_decode($request->getContent());
+            if (isset($requestBody[0]->itemId)) {
+                $itemId = $requestBody[0]->itemId;
+                $response = UserInventoryController::postRemoveItem($itemId, $this->getUser());
+            } else {
+                $response = response()->json(['Message' => 'No item declared'], 200);
             }
-            $itemId = $test[0]->itemId;
         }
 
-        if ($request->getContent()) {
-            $response = UserInventoryController::postRemoveItem($itemId, $user);
-        }
         return $response;
     }
 
@@ -277,23 +322,26 @@ class AjaxController extends Controller
      */
     public function getPreviousItem(Request $request)
     {
-        $user = null;
-        $test = json_decode($request->getContent());
-
-        if ($test) {
-            if ($test[0]->user) {
-                $user = $test[0]->user;
-            }
+        $errorMessage = $this->authorizeUser($request);
+        if ($errorMessage) {
+            return response()->json($errorMessage, 200);
         }
-
-        return response()->json(['prevItems' => UserInventoryController::getPrevItems($user)], 200);
+        return response()->json(['prevItems' => UserInventoryController::getPrevItems($this->getUser())], 200);
     }
 
     /**
+     * Connect to UserInventoryController to get the expired items
+     *
+     * @param Request $request
      * @return JsonResponse
      */
-    public function getExpiringItems()
+    public function getExpiringItems(Request $request)
     {
-        return response()->json(['expiringItems' => UserInventoryController::getExpiringItems()], 200);
+        $errorMessage = $this->authorizeUser($request);
+
+        if ($errorMessage) {
+            return response()->json($errorMessage, 200);
+        }
+        return response()->json(['expiringItems' => UserInventoryController::getExpiringItems($this->getUser())], 200);
     }
 }

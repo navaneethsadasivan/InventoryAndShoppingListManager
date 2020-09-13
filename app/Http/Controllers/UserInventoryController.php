@@ -22,66 +22,46 @@ class UserInventoryController extends Controller
     }
 
     /**
-     * @param int $item
+     * @param int $itemId
+     * @param int $userId
      * @return mixed
      * @throws Exception
      */
-    public static function postAddItem($itemId, $requestUser = null)
+    public static function postAddItem($itemId, $userId)
     {
-        $user = Auth::user();
-
-        if ($user === null && $requestUser !== null) {
-            $user = [
-                'id' => $requestUser
-            ];
-        }
-
-        $inventory = new Inventory($user['id']);
+        $inventory = new Inventory($userId);
         return $inventory->addStock($itemId);
     }
 
     /**
-     * @param int $item
+     * @param int $itemId
+     * @param int $userId
+     * @return array
      * @throws Exception
      */
-    public static function postRemoveItem($itemId, $requestUser)
+    public static function postRemoveItem($itemId, $userId)
     {
-        $user = Auth::user();
-
-        if ($user === null && $requestUser !== null) {
-            $user = [
-                'id' => $requestUser
-            ];
-        }
-
-        $inventory = new Inventory($user['id']);
+        $inventory = new Inventory($userId);
         return $inventory->removeStock($itemId);
     }
 
     /**
+     * @param int $userId
      * @return array
      */
-    public static function getPrevItems($requestUser)
+    public static function getPrevItems($userId)
     {
-        $user = Auth::user();
-
-        if ($user === null && $requestUser !== null) {
-            $user = [
-                'id' => $requestUser
-            ];
-        }
-
-        $inventory = new Inventory($user['id']);
+        $inventory = new Inventory($userId);
         return $inventory->getPreviousBoughtItems();
     }
 
     /**
+     * @param int $userId
      * @return array
      */
-    public static function getExpiringItems()
+    public static function getExpiringItems($userId)
     {
-        $user = Auth::user();
-        $inventory = new Inventory($user['id']);
+        $inventory = new Inventory($userId);
         return $inventory->getExpiredItems();
     }
 }
