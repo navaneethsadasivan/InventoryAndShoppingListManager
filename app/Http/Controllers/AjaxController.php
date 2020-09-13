@@ -72,11 +72,7 @@ class AjaxController extends Controller
      */
     public function getInventoryItems()
     {
-        if (InventoryItemController::show() === 'No data found') {
-            return response()->json(['message' => 'No data found'], 200);
-        } else {
-            return response()->json(['items' => InventoryItemController::show()], 200);
-        }
+        return response()->json(InventoryItemController::show(), 200);
     }
 
     /**
@@ -155,7 +151,7 @@ class AjaxController extends Controller
     }
 
     /**
-     * Connect to InventoryItemController to retrieve a singular item data
+     * Connect to InventoryItemController to retrieve matching item data
      *
      * @param Request $request
      * @return JsonResponse
@@ -163,48 +159,41 @@ class AjaxController extends Controller
     public function postSearchItem(Request $request)
     {
         $data = null;
-        $user = null;
-        $userDetails = Auth::user();
-        $test = json_decode($request->getContent());
+        $errorMessage = $this->authorizeUser($request);
 
-        if ($test) {
-            if (isset($test[0]->user)) {
-                $user = $test[0]->user;
-            } else if ($userDetails) {
-                $user = $userDetails['id'];
+        if ($errorMessage) {
+            $response = response()->json($errorMessage, 200);
+        } else {
+            $requestBody = json_decode($request->getContent());
+            if (isset($requestBody[0]->itemName)) {
+                $params =  json_decode($request->getContent());
+                $response = InventoryItemController::searchItem($params, $this->getUser());
             } else {
-                return response()->json(['message' => 'User id is not declared'], 400);
+                $response = response()->json(['Message' => 'No item declared'], 200);
             }
         }
 
-        if (json_decode($request->getContent())) {
-            $params =  json_decode($request->getContent());
-            $data = InventoryItemController::searchItem($params, $user);
-        }
-
-        return response()->json(['data' => $data], 200);
+        return $response;
     }
 
     /**
      * Connect to InventoryItemController to add a new singular item to the database
      *
      * @param Request $request
-     * @return JsonResponse
+     * @return string
+     * @throws Exception
      */
     public function postAddNewItem(Request $request)
     {
         $response = null;
-        if (json_decode($request->getContent())) {
-            try {
-                $response = InventoryItemController::addItem(json_decode($request->getContent()));
-            } catch (\Error $e) {
-                return response()->json(['errorMessage' => $e->getMessage()], 400);
-            } catch (Exception $e) {
-                return response()->json(['errorMessage' => $e->getMessage()], 400);
-            }
+        $requestBody = json_decode($request->getContent());
+        if (isset($requestBody[0]->name)) {
+                $response = InventoryItemController::addItem($requestBody[0]);
+        } else {
+            $response = response()->json(['Message' => 'No name given']);
         }
 
-        return response()->json(['message' => $response], 200);
+        return $response;
     }
 
     /**
@@ -217,15 +206,33 @@ class AjaxController extends Controller
     public function putUpdateItem(Request $request)
     {
         $response = null;
-        if (json_decode($request->getContent())) {
-            try {
-                $response = InventoryItemController::updateItem(json_decode($request->getContent()));
-            } catch (\Error $e) {
-                return response()->json(['errorMessage' => $e->getMessage()], 400);
-            }
+        $requestBody = json_decode($request->getContent());
+        if (isset($requestBody[0]->id)) {
+            $response = InventoryItemController::updateItem($requestBody[0]);
+        } else {
+            $response = response()->json(['Message' => 'Item id for updating not provided']);
         }
 
-        return response()->json(['message' => $response], 200);
+        return $response;
+    }
+
+    /**
+     * Connect to InventoryItemController to delete an item
+     *
+     * @param Request $request
+     * @return array|string|null
+     */
+    public function deleteItem(Request $request)
+    {
+        $response = null;
+        $requestBody = json_decode($request->getContent());
+        if (isset($requestBody[0]->id)) {
+            $response = InventoryItemController::deleteItem($requestBody[0]);
+        } else {
+            $response = response()->json(['Message' => 'Item id to be deleted not provided']);
+        }
+
+        return $response;
     }
 
     /**

@@ -77,6 +77,10 @@ Route::put(
     '/putUpdateItem', 'AjaxController@putUpdateItem'
 )->name('putUpdateItem');
 
+Route::delete(
+    '/deleteItem', 'AjaxController@deleteItem'
+)->name('deleteItem');
+
 Auth::routes();
 
 Route::get(

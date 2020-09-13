@@ -73,4 +73,14 @@ class InventoryItemController extends Controller
 
         return $inventory->updateItem();
     }
+
+    public static function deleteItem($item)
+    {
+        $inventory = new InventoryItem();
+        $inventory->setId(
+            $item->id
+        );
+
+        return $inventory->deleteItem();
+    }
 }

@@ -220,9 +220,13 @@ class InventoryItem
         $db = DB::select('select * from inventory_item');
 
         if ($db) {
-            return $db;
+            return [
+                'items' => $db
+            ];
         } else {
-            return 'No data found';
+            return [
+                'Message' => 'No data found'
+            ];
         }
     }
 
@@ -342,5 +346,22 @@ class InventoryItem
         } catch (\Exception $e) {
             return $e->getMessage();
         }
+    }
+
+    /**
+     * @return array|string
+     */
+    public function deleteItem()
+    {
+        try {
+            DB::table('inventory_item')->delete($this->getId());
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+
+        return [
+            'Message' => 'Item Deleted',
+            'ItemId' => $this->getId()
+        ];
     }
 }
