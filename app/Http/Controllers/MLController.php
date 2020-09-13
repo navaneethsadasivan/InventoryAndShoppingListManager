@@ -1,14 +1,14 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Model\AprioriTrain;
+use App\Model\ML;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * Class AprioriController
+ * Class MLController
  * @package App\Http\Controllers
  */
-class AprioriController extends Controller
+class MLController extends Controller
 {
     /**
      * @return array
@@ -16,7 +16,7 @@ class AprioriController extends Controller
     public static function show()
     {
         $user = Auth::user();
-        $apriori = new AprioriTrain($user['id']);
+        $apriori = new ML($user['id']);
         return [
             'Associate' => $apriori->associate(),
             'Frequent' => $apriori->frequentItems(),

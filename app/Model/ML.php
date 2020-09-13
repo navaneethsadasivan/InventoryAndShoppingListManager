@@ -4,10 +4,10 @@ use Illuminate\Support\Facades\DB;
 use Phpml\Association\Apriori;
 
 /**
- * Class AprioriTrain
+ * Class ML
  * @package App\Model
  */
-class AprioriTrain
+class ML
 {
     protected $testSamples = [];
 
@@ -37,7 +37,7 @@ class AprioriTrain
         $this->userId = $userId;
     }
 
-    protected function train($sup = 0.27, $conf = 0.5)
+    protected function train($sup = 0.1, $conf = 0.5)
     {
         $this->associator = new Apriori($support = $sup, $confidence = $conf);
         $this->associator->train($this->testSamples, $this->testLabels);

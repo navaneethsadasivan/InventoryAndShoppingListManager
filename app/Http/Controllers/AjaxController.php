@@ -91,13 +91,13 @@ class AjaxController extends Controller
     }
 
     /**
-     * Connect AprioriController to get all apriori association rules after training
+     * Connect MLController to get all apriori association rules after training
      *
      * @return JsonResponse
      */
     public function getApriori()
     {
-        return response()->json(['apriori' => AprioriController::show()], 200);
+        return response()->json(['apriori' => MLController::show()], 200);
     }
 
     /**

@@ -121,7 +121,7 @@ class ShoppingList
     public function generateList()
     {
         //add logic
-        $ml = new AprioriTrain($this->getUserId());
+        $ml = new ML($this->getUserId());
         return $ml->generateList();
     }
 //TODO: Need to modify this code to be more streamlined ^ v
