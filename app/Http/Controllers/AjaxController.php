@@ -54,7 +54,6 @@ class AjaxController extends Controller
                 $this->setUser($user->id);
                 return null;
             } else {
-
                 return [
                     'Message' => 'User API token invalid'
                 ];
@@ -103,26 +102,19 @@ class AjaxController extends Controller
      */
     public function postShoppingList(Request $request)
     {
-        $data = null;
-        $user = null;
-        $userDetails = Auth::user();
-        $test = json_decode($request->getContent());
+        $response = null;
+        $errorMessage = $this->authorizeUser($request);
 
-        if ($test) {
-            if (isset($test[0]->user)) {
-                $user = $test[0]->user;
-            } else if ($userDetails) {
-                $user = $userDetails['id'];
-            } else {
-                return response()->json(['message' => 'User id is not declared'], 400);
+        if ($errorMessage) {
+            $response = response()->json($errorMessage, 200);
+        } else {
+            $responseBody = json_decode($request->getContent());
+            if (isset($responseBody[0]->listItems)) {
+                $response = ShoppingListController::postShoppingList($responseBody[0]->listItems, $this->getUser());
             }
         }
 
-        if (json_decode($request->getContent())) {
-            $data = ShoppingListController::postShoppingList($test[0]->ListItems, $user);
-        }
-
-        return response()->json(['message' => $data], 200);
+        return $response;
     }
 
     /**
@@ -133,21 +125,13 @@ class AjaxController extends Controller
      */
     public function getHistory(Request $request)
     {
-        $user = null;
-        $userDetails = Auth::user();
-        $test = json_decode($request->getContent());
+        $errorMessage = $this->authorizeUser($request);
 
-        if (is_null($test) && is_null($userDetails)) {
-            return response()->json(['message' => 'User id is not declared'], 400);
-        } else {
-            if (isset($test[0]->user)) {
-                $user = $test[0]->user;
-            } else if ($userDetails['id']) {
-                $user = $userDetails['id'];
-            }
+        if ($errorMessage) {
+            return response()->json($errorMessage, 200);
         }
 
-        return response()->json(['history' => ShoppingListController::getShoppingListHistory($user)]);
+        return response()->json(['history' => ShoppingListController::getShoppingListHistory($this->getUser())]);
     }
 
     /**
@@ -233,22 +217,6 @@ class AjaxController extends Controller
         }
 
         return $response;
-    }
-
-    /**
-     * Connect to ShoppingListController to save a new list to the database
-     *
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function postNewList(Request $request)
-    {
-        $response = null;
-        if (json_decode($request->getContent())) {
-            $response = ShoppingListController::postShoppingList(json_decode($request->getContent()), Auth::user());
-        }
-
-        return response()->json(['message' => $response], 200);
     }
 
     /**

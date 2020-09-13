@@ -363,7 +363,7 @@
                         type: 'POST',
                         url: '/postShoppingList',
                         data: JSON.stringify([{
-                            'ListItems': historyItems
+                            'listItems': historyItems
                         }]),
                         success: function (data) {
                             $('.finalPrice').val(0)
