@@ -62,7 +62,7 @@ class AprioriTrain
     {
         $inventory = new Inventory($this->getUserIdWithoutFormat());
 
-        $items = DB::select('select * from shopping_list_items WHERE shopping_list_id like "U' . $this->getUserId() . '%"');
+        $items = DB::select('select * from shopping_list_items WHERE shopping_list_id like "Test%"');
         $itemSet = [];
 
         foreach ($items as $index => $itemData) {
@@ -79,7 +79,7 @@ class AprioriTrain
         $this->train();
 
 //        return $this->testSamples;
-        return $this->associate();
+//        return $this->associate();
 //        return $this->test($this->associate());
 
         $generatedList = $this->buildList($this->associate());

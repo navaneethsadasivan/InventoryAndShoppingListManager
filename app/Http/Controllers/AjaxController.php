@@ -77,11 +77,17 @@ class AjaxController extends Controller
     /**
      * Connect ShoppingListController to generate a new list
      *
+     * @param Request $request
      * @return JsonResponse
      */
-    public function getShoppingList()
+    public function getShoppingList(Request $request)
     {
-        return response()->json(['list' => ShoppingListController::show(Auth::user())], 200);
+        $errorMessage = $this->authorizeUser($request);
+
+        if ($errorMessage) {
+            return response()->json($errorMessage, 200);
+        }
+        return response()->json(['list' => ShoppingListController::show($this->getUser())], 200);
     }
 
     /**

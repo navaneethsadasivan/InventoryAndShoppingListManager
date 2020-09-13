@@ -11,12 +11,11 @@ use Illuminate\Contracts\Auth\Authenticatable;
 class ShoppingListController extends Controller
 {
     /**
-     * @param Authenticatable $userDetails
+     * @param int $userId
      * @return array
      */
-    public static function show($userDetails)
+    public static function show($userId)
     {
-        $userId = $userDetails['id'];
         $list = new ShoppingList($userId);
         return $list->showList();
     }
