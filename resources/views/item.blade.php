@@ -246,6 +246,7 @@
                             '</div>' +
                             '<div class="d-flex col-3">' +
                                 '<button class="btn btn-light" id="' + itemData.id + '" onclick="editItem(this.id)"><i class="fas fa-edit"></i></button>' +
+                                '<button class="btn btn-danger" onclick="deleteItem(' + itemData.id + ')"><i class="fas fa-times"></i></button>' +
                             '</div>' +
                         '</div>'
                     )
@@ -357,6 +358,23 @@
                     }
                 })
                 $('.modal').modal('show')
+            }
+
+            function deleteItem(id) {
+                $.ajax({
+                    type: 'DELETE',
+                    url: '/deleteItem',
+                    data: JSON.stringify([{
+                        'id': id
+                    }]),
+                    success: function (data) {
+                        if (data.Message === 'Item Deleted') {
+                            location.reload()
+                        } else {
+                            console.log(data)
+                        }
+                    }
+                })
             }
         </script>
     </body>

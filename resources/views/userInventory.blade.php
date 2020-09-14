@@ -91,7 +91,7 @@
             }
         </style>
     </head>
-    <body onload="getData()">
+    <body>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -175,6 +175,10 @@
         @endsection
 
         <script>
+            window.onload = function() {
+                getData()
+            }
+
             document.addEventListener('click', function (e) {
                 if (e.target.nodeName === 'SPAN' || e.target.id === 'addNewItem') {
                     $('.searchElement').val('')
@@ -197,25 +201,27 @@
             let searchItems = []
 
             function getData() {
-                if ({{$user}}) {
-                    $.ajax({
-                        type: 'GET',
-                        url: '/getUserInventory',
-                        success: function (data) {
+                $.ajax({
+                    type: 'GET',
+                    url: '/getUserInventory',
+                    success: function (data) {
+                        if (data.items) {
                             itemList = data.items
                             render()
                         }
-                    })
+                    }
+                })
 
-                    $.ajax({
-                        type: 'GET',
-                        url: '/getPrevBoughtItemUser',
-                        success: function (data) {
+                $.ajax({
+                    type: 'GET',
+                    url: '/getPrevBoughtItemUser',
+                    success: function (data) {
+                        if (data.prevItems) {
                             previousBoughtItems = data.prevItems
                             renderPrevItems(data.prevItems)
                         }
-                    })
-                }
+                    }
+                })
             }
 
             function render() {
