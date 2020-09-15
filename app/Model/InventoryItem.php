@@ -289,6 +289,14 @@ class InventoryItem
                         }
                     }
                 }
+            } elseif ($requestDetails->type === 3) {
+                foreach ($generalSearch as $generalIndex => $generalSearchItemDetails) {
+                    foreach ($requestDetails->addedItems as $itemId => $quantity) {
+                        if ($generalSearchItemDetails->id === (int)$itemId) {
+                            unset($generalSearch[$generalIndex]);
+                        }
+                    }
+                }
             }
         }
 

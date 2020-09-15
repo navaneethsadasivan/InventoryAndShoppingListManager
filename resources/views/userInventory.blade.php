@@ -31,6 +31,7 @@
                 text-transform: uppercase;
                 width: 50%;
             }
+
             .border-box {
                 border: solid 1px black;
                 border-radius: 20px;
@@ -39,6 +40,7 @@
                 background-color: #a1cbef;
                 width: 350px;
             }
+
             .items {
                 width: 100%;
             }
@@ -127,12 +129,11 @@
                         </div>
                     </div>
                     @auth
-                        <div class="d-flex justify-content-end align-items-center">
-                            <button id="addNewItem" class="btn" data-toggle="modal" data-target=".modal">
+                        <div class="d-flex p-2 justify-content-end align-items-center">
+                            <button id="addNewItem" class="btn btn-success" data-toggle="modal" data-target=".modal">
                                 <i class="fas fa-plus"></i>Add new item
                             </button>
                         </div>
-
                         <div class="d-flex justify-content-around mt-4">
                             <div class="col-8">
                                 <h3>Current Inventory</h3>

@@ -24,6 +24,15 @@
                 text-transform: uppercase;
             }
 
+            .border-box {
+                border: solid 1px black;
+                border-radius: 20px;
+                padding: 5px;
+                margin: 5px;
+                background-color: #a1cbef;
+                width: 350px;
+            }
+
             .page-title {
                 color: #ced4da;
                 text-align: left;
@@ -37,6 +46,7 @@
             }
 
             #generatedList {
+                width: 400px;
                 background-color: #fff8b3;
             }
 
@@ -78,6 +88,14 @@
                 font-size: 36px;
                 margin-left: 50px;
             }
+
+            .modal {
+                padding-top: 100px;
+            }
+
+            .modal-header {
+                background-color: #2a9055;
+            }
         </style>
     </head>
     <body>
@@ -117,6 +135,12 @@
                 <div class="alert-notification"></div>
 
                 @auth
+                    <div class="d-flex p-2 justify-content-end">
+                        <button id="add-item" class="btn btn-success" data-toggle="modal" data-target=".modal" hidden>
+                            <i class="fas fa-plus"></i>Add item
+                        </button>
+                    </div>
+
                     <div class="d-flex align-items-center justify-content-center my-4">
                         <button
                             onclick="generate()"
@@ -131,6 +155,28 @@
                     <div class="d-flex align-items-center justify-content-center my-4">
                         <button onclick="confirmList()" class="btn btn-success confirmButton" hidden>Confirm</button>
                     </div>
+
+                    <div class="modal fade" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3>Add Item</h3>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="d-flex row align-items-center justify-content-center p-5">
+                                        <input class="searchElement p-2 mr-2" type="text" placeholder="Type in the item">
+                                        <button onclick="search()" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="searchItems d-flex flex-wrap"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 @else
                     <div class="alert alert-danger">
                         You must be logged in to access this feature
@@ -140,6 +186,13 @@
         @endsection
 
         <script>
+            document.addEventListener('click', function (e) {
+                if (e.target.nodeName === 'SPAN' || e.target.id === 'add-item') {
+                    $('.searchElement').val('')
+                    $('.searchItems').empty()
+                }
+            })
+
             let itemIds = {};
 
             function openNavBar() {
@@ -160,26 +213,20 @@
                     type: 'GET',
                     url: '/getList',
                     success: function (data) {
-                        console.log(data)
                         if (data.list) {
                             $('#generateButton').prop('hidden', true)
                             $('.confirmButton').prop('hidden', false)
+                            $('#add-item').prop('hidden', false)
                             $('#generatedList').append(
-                                '<div class="d-flex row justify-content-between col-12">' +
-                                '<p class="col-10 border-bottom"><strong>Item</strong></p>' +
-                                '<p class="col-2 border-bottom"><strong>Price(&#163)</strong></p>' +
+                                '<div class="container">' +
+                                    '<div class="row">' +
+                                        '<h4 class="col-8 border-bottom"><strong>Item</strong></h4>' +
+                                        '<h4 class="col-4 border-bottom"><strong>Price(&#163)</strong></h4>' +
+                                    '</div>' +
                                 '</div>'
                             );
                             $.each(data.list, function (index, itemData) {
-                                let id = itemData.id
-                                itemIds[id] = 1
-                                $('#generatedList').append(
-                                    '<div class="d-flex justify-content-between">' +
-                                    '<span class="col-10">' + itemData.name + '</span>' +
-                                    '<span class="col-2">' + parseFloat(itemData.price).toFixed(2) + '</span>' +
-                                    '<button class="btn btn-light" id="'+ itemData.id +'" onclick="removeItem(this.id)">X</button>' +
-                                    '</div>'
-                                )
+                                addItem(itemData.id, itemData.name, itemData.price)
                             })
                         }
                     }
@@ -192,9 +239,11 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     type: 'POST',
-                    url: '/postNewList',
-                    data: JSON.stringify({0: itemIds}),
-                    success: function (data) {
+                    url: '/postShoppingList',
+                    data: JSON.stringify([{
+                        'listItems': itemIds
+                    }]),
+                    success: function () {
                         $('#generatedList').empty();
                         $('.alert-notification').append(
                             '<div class="alert-success">List has been confirmed</div>'
@@ -208,7 +257,70 @@
             }
 
             function removeItem(itemId) {
-                itemIds.splice(itemIds.indexOf(itemId), 1)
+                delete itemIds[itemId]
+                $('#' + itemId).remove()
+
+                if ($.isEmptyObject(itemIds)) {
+                    $('#generatedList').append(
+                        '<p>No items to display</p>'
+                    )
+                }
+            }
+
+            function search() {
+                let item = $('.searchElement').val()
+                $.ajax({
+                    headers : {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    type: 'POST',
+                    url: '/postSearchItem',
+                    data: JSON.stringify([{
+                        'itemName': item,
+                        'addedItems': itemIds,
+                        'type': 3
+                    }]),
+                    success: function (data) {
+                        if (data) {
+                            $('.searchItems').empty()
+                            searchItems = data
+                            $.each(searchItems, function (index, itemData) {
+                                if (itemData) {
+                                    let itemDetails = {
+                                        id: itemData.id,
+                                        name: itemData.name,
+                                        price: itemData.price,
+                                        type: 1
+                                    }
+                                    $('.searchItems').append(
+                                        '<div class="border-box">' +
+                                        '<div class="d-flex flex-wrap>"' +
+                                        '<label><strong>Name: </strong></label>' +
+                                        itemData.name + '<br>' +
+                                        '</div>' +
+                                        '<label><strong>Price:</strong></label>' +
+                                        itemData.price + '<br>' +
+                                        '<label><strong>Use By:</strong></label>' +
+                                        itemData.use_by + '<span> week(s) </span>' + '<br>' +
+                                        '<button class="btn btn-light" id="' + itemData.id + '" value="' + itemData.name +'" onclick="addItem(this.id, this.value, ' + itemData.price + ')">Add Item</button>' +
+                                        '</div>'
+                                    )
+                                }
+                            })
+                        }
+                    }
+                })
+            }
+
+            function addItem(id, name, price) {
+                itemIds[id] = 1;
+                $('#generatedList').append(
+                    '<div class="d-flex justify-content-between" id="'+ id+'">' +
+                    '<span class="col-10">' + name + '</span>' +
+                    '<span class="col-2">' + parseFloat(price).toFixed(2) + '</span>' +
+                    '<button class="btn btn-light" onclick="removeItem(' + id +')"><i class="fas fa-times"></i></button>' +
+                    '</div>'
+                )
             }
         </script>
     </body>
