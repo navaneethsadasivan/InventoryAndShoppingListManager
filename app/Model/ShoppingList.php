@@ -118,16 +118,10 @@ class ShoppingList
     /**
      * @return array
      */
-    public function generateList()
-    {
-        //add logic
-        $ml = new ML($this->getUserId());
-        return $ml->generateList();
-    }
-//TODO: Need to modify this code to be more streamlined ^ v
     public function showList()
     {
-        return $this->generateList();
+        $ml = new ML($this->getUserId());
+        return $ml->generateList();
     }
 
     /**
@@ -192,128 +186,6 @@ class ShoppingList
         return [
             'message' => 'List saved successfully'
         ];
-    }
-
-    /**
-     * @return array
-     */
-    public function getItemsForApriori()
-    {
-        $items = DB::select('select * from shopping_list_items WHERE shopping_list_id like "U' . $this->getUserId() . '%"');
-        $itemSet = [];
-        $historyItems = [];
-        $frequency = [];
-        $itemRepetition = [];
-        $finalItems = [];
-
-        foreach ($items as $index => $itemData) {
-            $itemSet[$itemData->shopping_list_id][] = $itemData->item_id;
-        }
-
-        foreach ($itemSet as $listId => $itemList) {
-            array_push($historyItems, $itemList);
-        }
-
-        foreach ($historyItems as $lists) {
-            $frequency[] = array_count_values($lists);
-        }
-
-        foreach ($frequency as $items) {
-            foreach ($items as $index => $value) {
-                if (array_key_exists($index, $itemRepetition)) {
-                    $itemRepetition[$index] += $value;
-                } else {
-                    $itemRepetition[$index] = 1;
-                }
-            }
-        }
-
-        $expiredItems = $this->getExpiredItems();
-
-        foreach ($itemRepetition as $itemName => $value) {
-            if ($value / sizeof($historyItems) >= 0.7) {
-                $finalItems[] = $itemName;
-            }
-            foreach ($expiredItems as $expiredItemId => $latestBought) {
-                if ($expiredItemId === $itemName) {
-                    if ($value / sizeof($historyItems) >= 0.6 && !in_array($expiredItemId, $finalItems)) {
-                        $finalItems [] = $expiredItemId;
-                        continue;
-                    }
-                }
-            }
-        }
-
-        return $finalItems;
-    }
-
-    /**
-     * @return array
-     */
-    public function getExpiredItems()
-    {
-        $largestUseByTime = DB::selectone('select max(use_by) as longest from inventory_item');
-        $rowCount = DB::selectone('select count(*) as rowCount from shopping_list where list_id like "U' . $this->getUserId() . '%"');
-
-        $offsetQuery = '';
-
-        if ($largestUseByTime->longest < $rowCount->rowCount) {
-            $offsetQuery = ' OFFSET ' . ($rowCount->rowCount - $largestUseByTime->longest);
-        }
-
-        $latestListIds = DB::select(
-            'select
-                list_id
-            from
-                shopping_list
-            where list_id like "U' . $this->getUserId() . '%"
-            ORDER BY id asc
-            limit ' . $largestUseByTime->longest .
-            $offsetQuery
-        );
-
-        $historyListItems = [];
-
-        foreach ($latestListIds as $index => $listId) {
-            $items = DB::select('select item_id from shopping_list_items where shopping_list_id = "' . $listId->list_id . '"');
-            $historyListItems[$listId->list_id] = $items;
-        }
-
-        $expiringItems = [];
-        foreach ($historyListItems as $listId => $listItems) {
-            if (!empty($expiringItems)) {
-                foreach ($expiringItems as $itemId => $latestEntry) {
-                    $flag = 0;
-                    foreach ($listItems as $index => $itemObject) {
-                        if ($itemId === $itemObject->item_id) {
-                            $flag = 1;
-                        }
-                    }
-
-                    if ($flag === 1) {
-                        $expiringItems[$itemId] = 1;
-                    } else {
-                        $expiringItems[$itemId] += 1;
-                    }
-                }
-            }
-
-            foreach ($listItems as $index => $itemObject) {
-                if (!in_array($itemObject->item_id, array_keys($expiringItems))) {
-                    $expiringItems[$itemObject->item_id] = 1;
-                }
-            }
-        }
-
-        foreach ($expiringItems as $id => $lastBought) {
-            $item = DB::selectone('select * from inventory_item where id = ' . $id);
-
-            if ($lastBought < $item->use_by) {
-                unset($expiringItems[$id]);
-            }
-        }
-
-        return $expiringItems;
     }
 
     /**

@@ -74,6 +74,10 @@ class InventoryItemController extends Controller
         return $inventory->updateItem();
     }
 
+    /**
+     * @param Object $item
+     * @return array|string
+     */
     public static function deleteItem($item)
     {
         $inventory = new InventoryItem();

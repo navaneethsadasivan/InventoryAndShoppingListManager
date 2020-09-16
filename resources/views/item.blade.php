@@ -98,6 +98,7 @@
                 margin-left: 50px;
             }
         </style>
+        <title>Database</title>
     </head>
     <body onload="getData()">
         <meta charset="utf-8">

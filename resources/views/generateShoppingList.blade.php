@@ -97,6 +97,7 @@
                 background-color: #2a9055;
             }
         </style>
+        <title>Generate Shopping List</title>
     </head>
     <body>
         @extends('layouts.app')
@@ -294,15 +295,15 @@
                                     }
                                     $('.searchItems').append(
                                         '<div class="border-box">' +
-                                        '<div class="d-flex flex-wrap>"' +
-                                        '<label><strong>Name: </strong></label>' +
-                                        itemData.name + '<br>' +
-                                        '</div>' +
-                                        '<label><strong>Price:</strong></label>' +
-                                        itemData.price + '<br>' +
-                                        '<label><strong>Use By:</strong></label>' +
-                                        itemData.use_by + '<span> week(s) </span>' + '<br>' +
-                                        '<button class="btn btn-light" id="' + itemData.id + '" value="' + itemData.name +'" onclick="addItem(this.id, this.value, ' + itemData.price + ')">Add Item</button>' +
+                                            '<div class="d-flex flex-wrap>"' +
+                                                '<label><strong>Name: </strong></label>' +
+                                                itemData.name + '<br>' +
+                                            '</div>' +
+                                            '<label><strong>Price:</strong></label>' +
+                                            itemData.price + '<br>' +
+                                            '<label><strong>Use By:</strong></label>' +
+                                            itemData.use_by + '<span> week(s) </span>' + '<br>' +
+                                            '<button class="btn btn-light" id="' + itemData.id + '" value="' + itemData.name +'" onclick="addItem(this.id, this.value, ' + itemData.price + ')">Add Item</button>' +
                                         '</div>'
                                     )
                                 }
@@ -316,9 +317,9 @@
                 itemIds[id] = 1;
                 $('#generatedList').append(
                     '<div class="d-flex justify-content-between" id="'+ id+'">' +
-                    '<span class="col-10">' + name + '</span>' +
-                    '<span class="col-2">' + parseFloat(price).toFixed(2) + '</span>' +
-                    '<button class="btn btn-light" onclick="removeItem(' + id +')"><i class="fas fa-times"></i></button>' +
+                        '<span class="col-10">' + name + '</span>' +
+                        '<span class="col-2">' + parseFloat(price).toFixed(2) + '</span>' +
+                        '<button class="btn btn-light" onclick="removeItem(' + id +')"><i class="fas fa-times"></i></button>' +
                     '</div>'
                 )
             }

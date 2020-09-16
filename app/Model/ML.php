@@ -9,12 +9,24 @@ use Phpml\Association\Apriori;
  */
 class ML
 {
-    protected $testSamples = [];
+    /**
+     * @var array
+     */
+    protected $samples = [];
 
-    protected $testLabels = [];
+    /**
+     * @var array
+     */
+    protected $labels = [];
 
+    /**
+     * @var null
+     */
     protected $associator = null;
 
+    /**
+     * @var int
+     */
     protected $userId;
 
     public function __construct($userId)
@@ -22,42 +34,68 @@ class ML
         $this->setUserId($userId);
     }
 
+    /**
+     * @return int
+     */
     public function getUserIdWithoutFormat()
     {
         return $this->userId;
     }
 
+    /**
+     * @return string
+     */
     public function getUserId()
     {
         return sprintf("%'02d", $this->userId);
     }
 
+    /**
+     * @param int $userId
+     */
     public function setUserId($userId)
     {
         $this->userId = $userId;
     }
 
+    /**
+     * @param float $sup
+     * @param float $conf
+     */
     protected function train($sup = 0.1, $conf = 0.5)
     {
         $this->associator = new Apriori($support = $sup, $confidence = $conf);
-        $this->associator->train($this->testSamples, $this->testLabels);
+        $this->associator->train($this->samples, $this->labels);
     }
 
+    /**
+     * @return array
+     */
     public function frequentItems()
     {
         return $this->associator->apriori();
     }
 
+    /**
+     * @return array
+     */
     public function associate()
     {
         return $this->associator->getRules();
     }
 
+    /**
+     * @param array $items
+     * @return array
+     */
     public function predict($items)
     {
         return $this->associator->predict($items);
     }
 
+    /**
+     * @return array
+     */
     public function generateList()
     {
         $inventory = new Inventory($this->getUserIdWithoutFormat());
@@ -70,20 +108,11 @@ class ML
         }
 
         foreach ($itemSet as $listId => $itemList) {
-            array_push($this->testSamples, $itemList);
+            array_push($this->samples, $itemList);
         }
 
-
-        $confidence = $this->getConfidence(count($this->testSamples));
-
         $this->train();
-
-//        return $this->testSamples;
-//        return $this->associate();
-//        return $this->test($this->associate());
-
         $generatedList = $this->buildList($this->associate());
-
         $newList = [];
         foreach ($generatedList as $index => $itemId) {
             $item = DB::selectOne('select * from inventory_item where id =' . $itemId);
@@ -93,11 +122,11 @@ class ML
         return $newList;
     }
 
-    protected function getConfidence($arrayCount)
-    {
-        return $arrayCount/100;
-    }
-
+    /**
+     * @param array $mlList
+     * @param null $expiredItems
+     * @return array
+     */
     protected function buildList($mlList, $expiredItems = null)
     {
         $data = [];
@@ -138,17 +167,5 @@ class ML
         }
 
         return $data;
-    }
-
-    public function test($associationRules)
-    {
-        $test = [];
-        foreach ($associationRules as $rule) {
-            if ($rule['antecedent'] === 49 || in_array(49, $rule['antecedent'])) {
-                $test[] = $this->predict([49]);
-            }
-        }
-
-        return $test;
     }
 }

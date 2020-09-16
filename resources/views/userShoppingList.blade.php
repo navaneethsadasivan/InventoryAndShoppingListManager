@@ -103,6 +103,7 @@
                 margin-left: 50px;
             }
         </style>
+        <title>Shopping List</title>
     </head>
     <body onload="defaultPage()">
         <meta charset="utf-8">
@@ -424,15 +425,15 @@
                             $.each(data.data, function (index, item) {
                                 $('.searchRender').append(
                                     '<div class="border-box">' +
-                                    '<div class="d-flex flex-wrap">' +
-                                        '<label><strong>Name:</strong></label>' +
-                                        item.name + '<br>'+
-                                    '</div>' +
-                                    '<label><strong>Price:</strong></label>' +
-                                    item.price + '<br>'+
-                                    '<label><strong>Use By:</strong></label>' +
-                                    item.use_by + '<span> week(s) </span>'+ '<br>'+
-                                    '<button class="btn btn-light" id="' + item.id + '" value="' + item.name + '"onclick="addItem(this.id, this.value,' + item.price + ')">Add Item</button>' +
+                                        '<div class="d-flex flex-wrap">' +
+                                            '<label><strong>Name:</strong></label>' +
+                                            item.name + '<br>'+
+                                        '</div>' +
+                                        '<label><strong>Price:</strong></label>' +
+                                        item.price + '<br>'+
+                                        '<label><strong>Use By:</strong></label>' +
+                                        item.use_by + '<span> week(s) </span>'+ '<br>'+
+                                        '<button class="btn btn-light" id="' + item.id + '" value="' + item.name + '"onclick="addItem(this.id, this.value,' + item.price + ')">Add Item</button>' +
                                     '</div>'
                                 )
                             })
@@ -504,17 +505,17 @@
                     addExpiredItems += 1
                     $('.expiredItems').append(
                         '<div class="border-box" id="' + id+ '">' +
-                        '<div class="d-flex flex-wrap>"' +
-                        '<label><strong>Name: </strong></label>' +
-                        expiredItems[id].name + '<br>' +
-                        '</div>' +
-                        '<label><strong>Price:</strong></label>' +
-                        expiredItems[id].price + '<br>' +
-                        '<label><strong>Last Bought:</strong></label>' +
-                        expiredItems[id].lastBought + '<br>' +
-                        '<label><strong>Use By:</strong></label>' +
-                        expiredItems[id].use_by + '<span> week(s) </span>' + '<br>' +
-                        '<button class="btn btn-light" onclick="addRenderedItem(' + id + ', 1)">Add Item</button>' +
+                            '<div class="d-flex flex-wrap>"' +
+                                '<label><strong>Name: </strong></label>' +
+                                expiredItems[id].name + '<br>' +
+                            '</div>' +
+                            '<label><strong>Price:</strong></label>' +
+                            expiredItems[id].price + '<br>' +
+                            '<label><strong>Last Bought:</strong></label>' +
+                            expiredItems[id].lastBought + '<br>' +
+                            '<label><strong>Use By:</strong></label>' +
+                            expiredItems[id].use_by + '<span> week(s) </span>' + '<br>' +
+                            '<button class="btn btn-light" onclick="addRenderedItem(' + id + ', 1)">Add Item</button>' +
                         '</div>'
                     )
                 }
@@ -523,15 +524,15 @@
                     addPrevBoughtItems += 1
                     $('.prevItems').append(
                         '<div class="border-box" id="' + id + '">' +
-                        '<div class="d-flex flex-wrap>"' +
-                        '<label><strong>Name: </strong></label>' +
-                        previouslyBoughtItems[id].name + '<br>' +
-                        '</div>' +
-                        '<label><strong>Price:</strong></label>' +
-                        previouslyBoughtItems[id].price + '<br>' +
-                        '<label><strong>Use By:</strong></label>' +
-                        previouslyBoughtItems[id].use_by + '<span> week(s) </span>' + '<br>' +
-                        '<button class="btn btn-light" onclick="addRenderedItem(' + id + ', 2)">Add Item</button>' +
+                            '<div class="d-flex flex-wrap>"' +
+                                '<label><strong>Name: </strong></label>' +
+                                previouslyBoughtItems[id].name + '<br>' +
+                            '</div>' +
+                            '<label><strong>Price:</strong></label>' +
+                            previouslyBoughtItems[id].price + '<br>' +
+                            '<label><strong>Use By:</strong></label>' +
+                            previouslyBoughtItems[id].use_by + '<span> week(s) </span>' + '<br>' +
+                            '<button class="btn btn-light" onclick="addRenderedItem(' + id + ', 2)">Add Item</button>' +
                         '</div>'
                     )
                 }
@@ -582,20 +583,20 @@
                     )
                     $('.listItems').append(
                         '<div class="d-flex border" id="' + id + '">' +
-                        '<div class="col-6">' +
-                        name +
-                        '</div>' +
-                        '<div class="col-2 quantity">' +
-                        historyItems[id] +
-                        '</div>' +
-                        '<div class="col-2 price">' +
-                        price +
-                        '</div>' +
-                        '<div class="col-2">' +
-                        '<button class="btn btn-light" onclick="decreaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-minus"></i></button>' +
-                        '<button class="btn btn-light" onclick="increaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-plus"></i></button>' +
-                        '<button class="btn btn-danger" onclick="removeItem(' + id + ')"><i class="fas fa-times"></i></button>' +
-                        '</div>' +
+                            '<div class="col-6">' +
+                                name +
+                            '</div>' +
+                            '<div class="col-2 quantity">' +
+                                historyItems[id] +
+                            '</div>' +
+                            '<div class="col-2 price">' +
+                                price +
+                            '</div>' +
+                            '<div class="col-2">' +
+                                '<button class="btn btn-light" onclick="decreaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-minus"></i></button>' +
+                                '<button class="btn btn-light" onclick="increaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-plus"></i></button>' +
+                                '<button class="btn btn-danger" onclick="removeItem(' + id + ')"><i class="fas fa-times"></i></button>' +
+                            '</div>' +
                         '</div>'
                     )
                     $('.alert-notification').empty().append(

@@ -92,6 +92,7 @@
                 margin-left: 50px;
             }
         </style>
+        <title>Inventory</title>
     </head>
     <body>
         <meta charset="utf-8">
