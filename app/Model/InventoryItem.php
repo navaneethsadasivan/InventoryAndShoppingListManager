@@ -348,7 +348,7 @@ class InventoryItem
                 );
 
             return [
-                'message' => 'Item updated',
+                'Message' => 'Item updated',
                 'item' => $this->asArray()
             ];
         } catch (\Exception $e) {

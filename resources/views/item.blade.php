@@ -267,27 +267,27 @@
                         },
                         type: 'POST',
                         url: '/postAddItem',
-                        data: JSON.stringify({
+                        data: JSON.stringify([{
                             'name': name,
                             'price': price,
                             'useBy': useBy,
                             'type': type
-                        }),
-                        success: function () {
-                            location.reload()
+                        }]),
+                        success: function (data) {
+                            if (data.Message !== 'Item added') {
+                                console.log(data.Message)
+                                $('.alert-notification').empty().append(
+                                    '<div class="alert-danger">' + data.Message + '</div>'
+                                ).slideDown(200).delay(2000).slideUp(200)
+                            } else {
+                                location.reload()
+                            }
                         },
-                        error: function (data) {
-                            $('.alert-notification').empty().append(
-                                '<div class="alert-danger">' + data.responseJSON.errorMessage + '</div>'
-                            ).delay(3000).slideUp(200)
-                        }
                     })
                 } else {
                     $('.alert-notification').empty().append(
                         '<div class="alert-danger">Enter item details</div>'
-                    ).delay(3000).slideUp(200, function () {
-                        $(this).alert('close')
-                    })
+                    ).slideDown(200).delay(3000).slideUp(200)
                 }
             }
 
@@ -322,11 +322,11 @@
                     ) {
                         $('.alert-notification').empty().append(
                             '<div class="alert-danger">No changes made</div>'
-                        ).delay(3000).slideUp(200)
+                        ).slideDown(200).delay(2000).slideUp(200)
                     }else if (name === '' || price === '' || useBy === '') {
                         $('.alert-notification').empty().append(
                             '<div class="alert-danger">Item Detail cant be empty</div>'
-                        ).delay(3000).slideUp(200)
+                        ).slideDown(200).delay(2000).slideUp(200)
                     } else {
                         $.ajax({
                             headers: {
@@ -334,25 +334,32 @@
                             },
                             type: 'PUT',
                             url: '/putUpdateItem',
-                            data: JSON.stringify({
+                            data: JSON.stringify([{
                                 'id': itemToEdit.id,
                                 'name': name,
                                 'type': type,
                                 'price': price,
                                 'useBy': useBy
-                            }),
-                            success: function () {
-                                location.reload()
+                            }]),
+                            success: function (data) {
+                                if (data.Message !== 'Item updated') {
+                                    console.log(data.Message)
+                                    $('.alert-notification').empty().append(
+                                        '<div class="alert-danger">' + data.Message + '</div>'
+                                    ).slideDown(200).delay(2000).slideUp(200)
+                                } else {
+                                    location.reload()
+                                }
                             },
                             error: function (data) {
                                 if (data.responseJSON.errorMessage) {
                                     $('.alert-notification').empty().append(
                                         '<div class="alert-danger">' + data.responseJSON.errorMessage + '</div>'
-                                    ).delay(3000).slideUp(200)
+                                    ).slideDown(200).delay(2000).slideUp(200)
                                 } else if (data.responseJSON.message) {
                                     $('.alert-notification').empty().append(
                                         '<div class="alert-danger">' + data.responseJSON.message + '</div>'
-                                    ).delay(3000).slideUp(200)
+                                    ).slideDown(200).delay(2000).slideUp(200)
                                 }
                             }
                         })

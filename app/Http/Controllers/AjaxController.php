@@ -178,7 +178,13 @@ class AjaxController extends Controller
         $response = null;
         $requestBody = json_decode($request->getContent());
         if (isset($requestBody[0]->name)) {
+            try {
                 $response = InventoryItemController::addItem($requestBody[0]);
+            } catch (\TypeError $te) {
+                $response = response()->json(['Message' => $te->getMessage()]);
+            } catch (Exception $e) {
+                $response = response()->json(['Message' => $e->getMessage()]);
+            }
         } else {
             $response = response()->json(['Message' => 'No name given']);
         }
@@ -198,7 +204,13 @@ class AjaxController extends Controller
         $response = null;
         $requestBody = json_decode($request->getContent());
         if (isset($requestBody[0]->id)) {
-            $response = InventoryItemController::updateItem($requestBody[0]);
+            try {
+                $response = InventoryItemController::updateItem($requestBody[0]);
+            } catch (\TypeError $te) {
+                $response = response()->json(['Message' => $te->getMessage()]);
+            } catch (Exception $e) {
+                $response = response()->json(['Message' => $e->getMessage()]);
+            }
         } else {
             $response = response()->json(['Message' => 'Item id for updating not provided']);
         }
