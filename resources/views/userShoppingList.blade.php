@@ -351,11 +351,9 @@
             //Function to submit the final list of items to the database
             function finalSubmit() {
                 if (addItems === 0) {
-                    $('.alert-notification').append(
+                    $('.alert-notification').empty().append(
                         '<div class="alert alert-danger">No items in list</div>'
-                    ).delay(3000).slideUp(200, function () {
-                        $(this).alert('close')
-                    })
+                    ).slideDown(200).delay(2000).slideUp(200)
                 } else {
                     $.ajax({
                         headers: {
@@ -375,11 +373,9 @@
                             $('.defaultList').empty().append(
                                 '<p>No items in list</p>'
                             )
-                            $('.alert-notification').append(
+                            $('.alert-notification').empty().append(
                                 '<div class="alert alert-success">List Saved</div>'
-                            ).delay(3000).slideUp(200, function () {
-                                $(this).alert('close')
-                            })
+                            ).slideDown(200).delay(2000).slideUp(200)
                         }
                     })
                 }
@@ -399,11 +395,9 @@
                 } else {
                     $('.searchRender').empty()
                     $('#searchElement').css('borderColor', 'red')
-                    $('.alert-notification').append(
+                    $('.alert-notification').empty().append(
                         '<div class="alert alert-danger">Enter an item to search</div>'
-                    ).delay(3000).slideUp(200, function () {
-                        $(this).alert('close')
-                    })
+                    ).slideDown(200).delay(2000).slideUp(200)
                 }
             }
 
@@ -421,8 +415,8 @@
                         'type': 2
                     }]),
                     success: function (data) {
-                        if (data.data.length !== 0) {
-                            $.each(data.data, function (index, item) {
+                        if (data.length !== 0) {
+                            $.each(data, function (index, item) {
                                 $('.searchRender').append(
                                     '<div class="border-box">' +
                                         '<div class="d-flex flex-wrap">' +
@@ -481,30 +475,32 @@
                 $('.searchRender').empty();
                 $('.alert-notification').empty().append(
                     '<div class="alert alert-success">Item Added</div>'
-                ).delay(3000).slideUp(200, function () {
-                    $(this).alert('close')
-                })
+                ).slideDown(200).delay(2000).slideUp(200)
             }
 
             //Function to remove the item from the list
             function removeItem(id) {
                 delete historyItems[id]
                 $('#' + id).remove()
+                $('.alert-notification').empty().append(
+                    '<div class="alert alert-success">Item Removed</div>'
+                ).slideDown(200).delay(2000).slideUp(200)
                 addItems -= 1
 
                 if (addItems === 0) {
                     $('.defaultList').append(
                         '<p>No items in list</p>'
                     )
+                    totalPrice = 0.00
                     $('.finalPrice').empty().append(
-                        0.00
+                        totalPrice
                     )
                 }
 
                 if (expiredItems[id]) {
                     addExpiredItems += 1
                     $('.expiredItems').append(
-                        '<div class="border-box" id="' + id+ '">' +
+                        '<div class="border-box" id="expired' + id + '">' +
                             '<div class="d-flex flex-wrap>"' +
                                 '<label><strong>Name: </strong></label>' +
                                 expiredItems[id].name + '<br>' +
@@ -523,7 +519,7 @@
                 if (previouslyBoughtItems[id]) {
                     addPrevBoughtItems += 1
                     $('.prevItems').append(
-                        '<div class="border-box" id="' + id + '">' +
+                        '<div class="border-box" id="prev' + id + '">' +
                             '<div class="d-flex flex-wrap>"' +
                                 '<label><strong>Name: </strong></label>' +
                                 previouslyBoughtItems[id].name + '<br>' +
@@ -547,9 +543,10 @@
 
                 let name = null
                 let price = null
+                $('#expired' + id).remove();
+                $('#prev' + id).remove();
 
                 if (type === 1) {
-                    $('#expired' + id).remove();
                     name = expiredItems[id].name
                     price = expiredItems[id].price
                     addExpiredItems -= 1;
@@ -559,7 +556,6 @@
                         )
                     }
                 } else if (type === 2) {
-                    $('#prev' + id).remove();
                     name = previouslyBoughtItems[id].name
                     price = previouslyBoughtItems[id].price
                     addPrevBoughtItems -= 1;
@@ -570,41 +566,34 @@
                     }
                 }
 
-                if (historyItems[id]) {
-                    increaseQuantity(id, price)
-                } else {
-                    addItems += 1
-                    historyItems[id] = 1
-                    totalPrice += price
-                    console.log(historyItems)
+                addItems += 1
+                historyItems[id] = 1
+                totalPrice += price
 
-                    $('.finalPrice').empty().append(
-                        totalPrice.toFixed(2)
-                    )
-                    $('.listItems').append(
-                        '<div class="d-flex border" id="' + id + '">' +
-                            '<div class="col-6">' +
-                                name +
-                            '</div>' +
-                            '<div class="col-2 quantity">' +
-                                historyItems[id] +
-                            '</div>' +
-                            '<div class="col-2 price">' +
-                                price +
-                            '</div>' +
-                            '<div class="col-2">' +
-                                '<button class="btn btn-light" onclick="decreaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-minus"></i></button>' +
-                                '<button class="btn btn-light" onclick="increaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-plus"></i></button>' +
-                                '<button class="btn btn-danger" onclick="removeItem(' + id + ')"><i class="fas fa-times"></i></button>' +
-                            '</div>' +
-                        '</div>'
-                    )
-                    $('.alert-notification').empty().append(
-                        '<div class="alert alert-success">Item Added</div>'
-                    ).delay(3000).slideUp(200, function () {
-                        $(this).alert('close')
-                    })
-                }
+                $('.finalPrice').empty().append(
+                    totalPrice.toFixed(2)
+                )
+                $('.listItems').append(
+                    '<div class="d-flex border" id="' + id + '">' +
+                        '<div class="col-6">' +
+                            name +
+                        '</div>' +
+                        '<div class="col-2 quantity">' +
+                            historyItems[id] +
+                        '</div>' +
+                        '<div class="col-2 price">' +
+                            price +
+                        '</div>' +
+                        '<div class="col-2">' +
+                            '<button class="btn btn-light" onclick="decreaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-minus"></i></button>' +
+                            '<button class="btn btn-light" onclick="increaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-plus"></i></button>' +
+                            '<button class="btn btn-danger" onclick="removeItem(' + id + ')"><i class="fas fa-times"></i></button>' +
+                        '</div>' +
+                    '</div>'
+                )
+                $('.alert-notification').empty().append(
+                    '<div class="alert alert-success">Item Added</div>'
+                ).slideDown(200).delay(2000).slideUp(200)
             }
 
             //Function to increase the quantity of the item
@@ -641,10 +630,11 @@
                     $('#' + id + ' .price').empty().append(
                         itemPrice
                     )
-                    $('.finalPrice').empty().append(
-                        totalPrice.toFixed(2)
-                    )
                 }
+
+                $('.finalPrice').empty().append(
+                    totalPrice.toFixed(2)
+                )
             }
 
             //Function that requests all previous shopping list history of the user and renders it in the model

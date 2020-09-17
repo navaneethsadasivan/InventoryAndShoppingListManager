@@ -275,7 +275,6 @@
                         }]),
                         success: function (data) {
                             if (data.Message !== 'Item added') {
-                                console.log(data.Message)
                                 $('.alert-notification').empty().append(
                                     '<div class="alert-danger">' + data.Message + '</div>'
                                 ).slideDown(200).delay(2000).slideUp(200)
@@ -343,7 +342,6 @@
                             }]),
                             success: function (data) {
                                 if (data.Message !== 'Item updated') {
-                                    console.log(data.Message)
                                     $('.alert-notification').empty().append(
                                         '<div class="alert-danger">' + data.Message + '</div>'
                                     ).slideDown(200).delay(2000).slideUp(200)

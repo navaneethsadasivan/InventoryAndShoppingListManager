@@ -345,15 +345,15 @@
                                     $.each(searchItems, function (index, itemData) {
                                         $('.searchItems').append(
                                             '<div class="border-box">' +
-                                            '<div class="d-flex flex-wrap>"' +
-                                            '<label><strong>Name: </strong></label>' +
-                                            itemData.name + '<br>' +
-                                            '</div>' +
-                                            '<label><strong>Price:</strong></label>' +
-                                            itemData.price + '<br>' +
-                                            '<label><strong>Use By:</strong></label>' +
-                                            itemData.use_by + '<span> week(s) </span>' + '<br>' +
-                                            '<button class="btn btn-light" id="' + itemData.id + '" value="' + itemData.name + '"onclick="addItem(this.id)">Add Item</button>' +
+                                                '<div class="d-flex flex-wrap>"' +
+                                                    '<label><strong>Name: </strong></label>' +
+                                                    itemData.name + '<br>' +
+                                                '</div>' +
+                                                '<label><strong>Price:</strong></label>' +
+                                                itemData.price + '<br>' +
+                                                '<label><strong>Use By:</strong></label>' +
+                                                itemData.use_by + '<span> week(s) </span>' + '<br>' +
+                                                '<button class="btn btn-light" id="' + itemData.id + '" value="' + itemData.name + '"onclick="addItem(this.id)">Add Item</button>' +
                                             '</div>'
                                         )
                                     })
