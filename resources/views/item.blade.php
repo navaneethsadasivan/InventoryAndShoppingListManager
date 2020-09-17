@@ -351,17 +351,6 @@
                                     location.reload()
                                 }
                             },
-                            error: function (data) {
-                                if (data.responseJSON.errorMessage) {
-                                    $('.alert-notification').empty().append(
-                                        '<div class="alert-danger">' + data.responseJSON.errorMessage + '</div>'
-                                    ).slideDown(200).delay(2000).slideUp(200)
-                                } else if (data.responseJSON.message) {
-                                    $('.alert-notification').empty().append(
-                                        '<div class="alert-danger">' + data.responseJSON.message + '</div>'
-                                    ).slideDown(200).delay(2000).slideUp(200)
-                                }
-                            }
                         })
                     }
                 })
@@ -375,12 +364,8 @@
                     data: JSON.stringify([{
                         'id': id
                     }]),
-                    success: function (data) {
-                        if (data.Message === 'Item Deleted') {
-                            location.reload()
-                        } else {
-                            console.log(data)
-                        }
+                    success: function () {
+                        location.reload()
                     }
                 })
             }

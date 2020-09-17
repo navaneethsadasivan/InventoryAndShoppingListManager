@@ -155,6 +155,7 @@
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
+                                    <div class="modal-alert-notification"></div>
                                     <div class="modal-body">
                                         <div class="d-flex row align-items-center justify-content-center p-5">
                                             <input class="searchElement p-2 mr-2" type="text" placeholder="Type in the item">
@@ -220,7 +221,7 @@
                     success: function (data) {
                         if (data.prevItems) {
                             previousBoughtItems = data.prevItems
-                            renderPrevItems(data.prevItems)
+                            renderPrevItems()
                         }
                     }
                 })
@@ -244,10 +245,12 @@
                                 '<label><strong>Use By:</strong></label>' +
                                 itemData.itemDetails.use_by + '<span> week(s) </span>'+ '<br>'+
                                 '<label><strong>Current Stock: </strong></label>' +
-                                '<div class="d-flex mx-2">' +
-                                    '<button class="btn btn-light" id="' + itemData.itemDetails.id + '" onclick="removeItem(this.id)">-</button>' +
-                                    '<input type="text" value="' + itemData.currentStock + '"><br>' +
-                                    '<button class="btn btn-light" id="' + itemData.itemDetails.id + '" onclick="addItem(this.id)">+</button>' +
+                                '<div class="container">' +
+                                    '<div class="row justify-content-between align-items-center">' +
+                                        '<button class="btn btn-danger col-2" id="' + itemData.itemDetails.id + '" onclick="removeItem(this.id)"><i class="fas fa-minus"></i></button>' +
+                                        '<p><strong>' + itemData.currentStock + '</strong></p>' +
+                                        '<button class="btn btn-success col-2" id="' + itemData.itemDetails.id + '" onclick="addItem(this.id)"><i class="fas fa-plus"></i></button>' +
+                                    '</div>' +
                                 '</div>' +
                             '</div>'
                         )
@@ -265,8 +268,11 @@
                     data: JSON.stringify([{
                         'itemId': id
                     }]),
-                    success: function (data) {
-                       location.reload()
+                    success: function () {
+                        $('.items').empty()
+                        $('.prevItems').empty()
+                        $('.modal').modal('hide')
+                        getData()
                     }
                 })
             }
@@ -282,19 +288,21 @@
                         'itemId': id
                     }]),
                     success: function () {
-                        location.reload()
+                        $('.items').empty()
+                        $('.prevItems').empty()
+                        getData()
                     }
                 })
             }
 
-            function renderPrevItems(items) {
-                if (items.length === 0) {
+            function renderPrevItems() {
+                if (previousBoughtItems.length === 0) {
                     $('.prevItems').append(
                         '<p>No previous items found</p>'
                     )
                 } else {
                     $('.prevItems').empty()
-                    $.each(items, function (index, itemData) {
+                    $.each(previousBoughtItems, function (index, itemData) {
                         $('.prevItems').append(
                             '<div class="border-box">' +
                                 '<div class="d-flex flex-wrap>"' +
@@ -314,40 +322,50 @@
 
             function search() {
                 let item = $('.searchElement').val()
-                $.ajax({
-                    headers : {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    type: 'POST',
-                    url: '/postSearchItem',
-                    data: JSON.stringify([{
-                        'itemName': item,
-                        'type': 1
-                    }]),
-                    success: function (data) {
-                        if (data) {
-                            $('.searchItems').empty()
-                            searchItems = data.data
-                            $.each(searchItems, function (index, itemData) {
-                                if (itemData) {
-                                    $('.searchItems').append(
-                                        '<div class="border-box">' +
+                if (item.length !== 0) {
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        type: 'POST',
+                        url: '/postSearchItem',
+                        data: JSON.stringify([{
+                            'itemName': item,
+                            'type': 1
+                        }]),
+                        success: function (data) {
+                            if (data) {
+                                $('.searchItems').empty()
+                                searchItems = data
+                                if (searchItems.length === 0) {
+                                    $('.modal-alert-notification').empty().append(
+                                        '<div class="alert-danger">No items found</div>'
+                                    ).slideDown(200).delay(2000).slideUp(200)
+                                } else {
+                                    $.each(searchItems, function (index, itemData) {
+                                        $('.searchItems').append(
+                                            '<div class="border-box">' +
                                             '<div class="d-flex flex-wrap>"' +
-                                                '<label><strong>Name: </strong></label>' +
-                                                itemData.name + '<br>' +
+                                            '<label><strong>Name: </strong></label>' +
+                                            itemData.name + '<br>' +
                                             '</div>' +
                                             '<label><strong>Price:</strong></label>' +
                                             itemData.price + '<br>' +
                                             '<label><strong>Use By:</strong></label>' +
                                             itemData.use_by + '<span> week(s) </span>' + '<br>' +
                                             '<button class="btn btn-light" id="' + itemData.id + '" value="' + itemData.name + '"onclick="addItem(this.id)">Add Item</button>' +
-                                        '</div>'
-                                    )
+                                            '</div>'
+                                        )
+                                    })
                                 }
-                            })
+                            }
                         }
-                    }
-                })
+                    })
+                } else {
+                    $('.modal-alert-notification').empty().append(
+                        '<div class="alert-danger">Enter item to be searched</div>'
+                    ).slideDown(200).delay(2000).slideUp(200)
+                }
             }
         </script>
     </body>
