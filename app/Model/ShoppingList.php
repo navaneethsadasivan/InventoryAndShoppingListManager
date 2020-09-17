@@ -132,7 +132,16 @@ class ShoppingList
         $day = substr(date('D'), -3, 1);
         $dmy = date('dmy');
 
-        $db = DB::selectOne('select list_id from shopping_list ORDER BY id DESC');
+        if ($this->getUserIdWithoutFormat() === 5) {
+            $db = DB::selectOne('select list_id from shopping_list where list_id like "Test%" ORDER BY id DESC');
+            $listNo = (int)substr($db->list_id, -1);
+            $listNo += 1;
+            $listNo = sprintf("%'02d", $listNo);
+
+            return 'Test' . $listNo;
+        }
+
+        $db = DB::selectOne('select list_id from shopping_list where list_id like "' . $this->getUserId() . '%" ORDER BY id DESC');
 
         if ($db === null) {
             $listNo = '001';
