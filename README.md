@@ -34,8 +34,8 @@ The application has endpoint access to use the features mentioned above. They ar
 - /getUserInventory: Get all items in user inventory
 - /getPrevBoughtItemUser: Get all previously bought items by the user
 - /getExpiringItems: Get all items that have expired since last purchase
-- postAddItemUserInventory: Increase item stock in current inventory
-- postRemoveItemUserInventory: Decrease item stock in current inventory
+- /postAddItemUserInventory: Increase item stock in current inventory
+- /postRemoveItemUserInventory: Decrease item stock in current inventory
 
 ###### Shopping List Manager
 
