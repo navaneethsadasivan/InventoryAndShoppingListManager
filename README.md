@@ -11,6 +11,17 @@ The application is an inventory and shopping list manager as a service. It provi
 
 This is a university dissertation project and is in the works and hold potential to expand
 
+## How to run
+
+The database/SQL folder contains data used for project as initial setup. The project also connects to a database named 'dissertation' (all hosting information saved in the .env file)
+
+To run the project, install all packages with:
+##### composer install
+
+Once all packages have been installed, run the following two separate commands on two separate command lines/terminals
+##### npm run watch
+##### php artisan serve
+
 ## Beta features
 
 The application also holds some beta features that are in testing mode:
