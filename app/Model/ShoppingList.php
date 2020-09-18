@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Model;
+use Exception;
 use Illuminate\Support\Facades\DB;
-use Phpml\Association\Apriori;
 
 /**
  * Class ShoppingList
@@ -157,6 +157,7 @@ class ShoppingList
     /**
      * @param Object $shoppingList
      * @return string[]
+     * @throws Exception
      */
     public function saveHistory($shoppingList)
     {
@@ -190,7 +191,7 @@ class ShoppingList
                 ]
             );
 
-            $userInventory->save($item);
+            $userInventory->addStock($item);
         }
         return [
             'message' => 'List saved successfully'

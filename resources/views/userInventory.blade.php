@@ -228,7 +228,7 @@
             }
 
             function render() {
-                if (itemList === null) {
+                if (itemList.length === 0) {
                     $('.items').append('<p>Nothing to render</p>')
                 } else {
                     $.each(itemList, function (index, itemData) {

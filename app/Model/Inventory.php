@@ -113,40 +113,6 @@ class Inventory
     }
 
     /**
-     * @param int $item
-     */
-    public function save($item)
-    {
-        $inventoryItem = DB::selectOne('
-            select * from inventory_user where item_id =
-        ' . $item);
-
-        if ($inventoryItem !== null) {
-            DB::table('inventory_user')
-                ->where(
-                    [
-                        'user_id' => $this->getUser(),
-                        'item_id' => $item
-                    ]
-                )
-                ->update(
-                [
-                    'current_stock' => $inventoryItem->current_stock + 1
-                ]
-            );
-        } else {
-            DB::table('inventory_user')
-                ->insert(
-                    [
-                        'user_id' => $this->getUser(),
-                        'item_id' => $item,
-                        'current_stock' => 1
-                    ]
-            );
-        }
-    }
-
-    /**
      * @param int $itemId
      * @return array
      * @throws Exception

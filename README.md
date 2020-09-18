@@ -18,7 +18,10 @@ The database/SQL folder contains data used for project as initial setup. The pro
 To run the project, install all packages with:
 ##### composer install
 
-Once all packages have been installed, run the following two separate commands on two separate command lines/terminals
+Once all packages have been installed, run the laravel migrations:
+##### php artisan migrate
+
+Run the following two separate commands on two separate command lines/terminals:
 ##### npm run watch
 ##### php artisan serve
 
