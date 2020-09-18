@@ -25,6 +25,7 @@
                 color: #f1f1f1;
             }
         </style>
+        <title>Login</title>
     </head>
     <body>
     <meta charset="utf-8">
