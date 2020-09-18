@@ -470,7 +470,7 @@
                         '<div class="col-2">' +
                             '<button class="btn btn-light" onclick="decreaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-minus"></i></button>' +
                             '<button class="btn btn-light" onclick="increaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-plus"></i></button>' +
-                            '<button class="btn btn-danger" onclick="removeItem(' + id + ')"><i class="fas fa-times"></i></button>' +
+                            '<button class="btn btn-danger" onclick="removeItem(' + id + ', ' + price + ')"><i class="fas fa-times"></i></button>' +
                         '</div>' +
                     '</div>'
                 )
@@ -481,7 +481,9 @@
             }
 
             //Function to remove the item from the list
-            function removeItem(id) {
+            function removeItem(id, price) {
+                let removePrice = (historyItems[id]*price).toFixed(2)
+                totalPrice -= removePrice
                 delete historyItems[id]
                 $('#' + id).remove()
                 $('.alert-notification').empty().append(
@@ -494,12 +496,16 @@
                         '<p>No items in list</p>'
                     )
                     totalPrice = 0.00
-                    $('.finalPrice').empty().append(
-                        totalPrice
-                    )
                 }
 
+                $('.finalPrice').empty().append(
+                    totalPrice.toFixed(2)
+                )
+
                 if (expiredItems[id]) {
+                    if (addExpiredItems === 0) {
+                        $('.expiredItems').empty()
+                    }
                     addExpiredItems += 1
                     $('.expiredItems').append(
                         '<div class="border-box" id="expired' + id + '">' +
@@ -519,6 +525,9 @@
                 }
 
                 if (previouslyBoughtItems[id]) {
+                    if (addPrevBoughtItems === 0) {
+                        $('.prevItems').empty()
+                    }
                     addPrevBoughtItems += 1
                     $('.prevItems').append(
                         '<div class="border-box" id="prev' + id + '">' +
@@ -589,7 +598,7 @@
                         '<div class="col-2">' +
                             '<button class="btn btn-light" onclick="decreaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-minus"></i></button>' +
                             '<button class="btn btn-light" onclick="increaseQuantity(' + id + ', ' + price + ')"><i class="fas fa-plus"></i></button>' +
-                            '<button class="btn btn-danger" onclick="removeItem(' + id + ')"><i class="fas fa-times"></i></button>' +
+                            '<button class="btn btn-danger" onclick="removeItem(' + id + ', ' + price + ')"><i class="fas fa-times"></i></button>' +
                         '</div>' +
                     '</div>'
                 )
@@ -624,7 +633,7 @@
                 totalPrice -= price
 
                 if (historyItems[id] === 0) {
-                    removeItem(id)
+                    removeItem(id, price)
                 } else {
                     $('#' + id + ' .quantity').empty().append(
                         historyItems[id]
