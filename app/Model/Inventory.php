@@ -266,10 +266,21 @@ class Inventory
             if ($expiringDate > date("Y-m-d H:i:s")) {
                 unset($expiringItems[$id]);
             } else {
-                $expiringItems[$id] = [
-                    'itemDetails' => $item,
-                    'lastBought' => date("d/m/y", strtotime($expiringItems[$id]))
-                ];
+                $flag = 0;
+                foreach ($this->getUserInventory() as $index => $itemInformation) {
+                    if ($itemInformation['itemDetails']->id === $id) {
+                        $flag = 1;
+                    }
+                }
+
+                if ($flag === 1) {
+                    unset($expiringItems[$id]);
+                } else {
+                    $expiringItems[$id] = [
+                        'itemDetails' => $item,
+                        'lastBought' => date("d/m/y", strtotime($expiringItems[$id]))
+                    ];
+                }
             }
         }
 
