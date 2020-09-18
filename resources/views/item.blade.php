@@ -261,28 +261,42 @@
                 let type = $('.type').val()
 
                 if (name && price && useBy && type) {
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        type: 'POST',
-                        url: '/postAddItem',
-                        data: JSON.stringify([{
-                            'name': name,
-                            'price': price,
-                            'useBy': useBy,
-                            'type': type
-                        }]),
-                        success: function (data) {
-                            if (data.Message !== 'Item added') {
-                                $('.alert-notification').empty().append(
-                                    '<div class="alert-danger">' + data.Message + '</div>'
-                                ).slideDown(200).delay(2000).slideUp(200)
-                            } else {
-                                location.reload()
-                            }
-                        },
-                    })
+                    if (!isNaN(name)) {
+                        $('.alert-notification').empty().append(
+                            '<div class="alert-danger">Name must be of type string</div>'
+                        ).slideDown(200).delay(3000).slideUp(200)
+                    } else if (isNaN(price)) {
+                        $('.alert-notification').empty().append(
+                            '<div class="alert-danger">Price must be of type number</div>'
+                        ).slideDown(200).delay(3000).slideUp(200)
+                    } else if (isNaN(useBy)) {
+                        $('.alert-notification').empty().append(
+                            '<div class="alert-danger">Use By must be of type number</div>'
+                        ).slideDown(200).delay(3000).slideUp(200)
+                    } else {
+                        $.ajax({
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            type: 'POST',
+                            url: '/postAddItem',
+                            data: JSON.stringify([{
+                                'name': name,
+                                'price': price,
+                                'useBy': useBy,
+                                'type': type
+                            }]),
+                            success: function (data) {
+                                if (data.Message !== 'Item added') {
+                                    $('.alert-notification').empty().append(
+                                        '<div class="alert-danger">' + data.Message + '</div>'
+                                    ).slideDown(200).delay(2000).slideUp(200)
+                                } else {
+                                    location.reload()
+                                }
+                            },
+                        })
+                    }
                 } else {
                     $('.alert-notification').empty().append(
                         '<div class="alert-danger">Enter item details</div>'
@@ -327,29 +341,43 @@
                             '<div class="alert-danger">Item Detail cant be empty</div>'
                         ).slideDown(200).delay(2000).slideUp(200)
                     } else {
-                        $.ajax({
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            type: 'PUT',
-                            url: '/putUpdateItem',
-                            data: JSON.stringify([{
-                                'id': itemToEdit.id,
-                                'name': name,
-                                'type': type,
-                                'price': price,
-                                'useBy': useBy
-                            }]),
-                            success: function (data) {
-                                if (data.Message !== 'Item updated') {
-                                    $('.alert-notification').empty().append(
-                                        '<div class="alert-danger">' + data.Message + '</div>'
-                                    ).slideDown(200).delay(2000).slideUp(200)
-                                } else {
-                                    location.reload()
-                                }
-                            },
-                        })
+                        if (!isNaN(name)) {
+                            $('.alert-notification').empty().append(
+                                '<div class="alert-danger">Name must be of type string</div>'
+                            ).slideDown(200).delay(3000).slideUp(200)
+                        } else if (isNaN(price)) {
+                            $('.alert-notification').empty().append(
+                                '<div class="alert-danger">Price must be of type number</div>'
+                            ).slideDown(200).delay(3000).slideUp(200)
+                        } else if (isNaN(useBy)) {
+                            $('.alert-notification').empty().append(
+                                '<div class="alert-danger">Use By must be of type number</div>'
+                            ).slideDown(200).delay(3000).slideUp(200)
+                        } else {
+                            $.ajax({
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                },
+                                type: 'PUT',
+                                url: '/putUpdateItem',
+                                data: JSON.stringify([{
+                                    'id': itemToEdit.id,
+                                    'name': name,
+                                    'type': type,
+                                    'price': price,
+                                    'useBy': useBy
+                                }]),
+                                success: function (data) {
+                                    if (data.Message !== 'Item updated') {
+                                        $('.alert-notification').empty().append(
+                                            '<div class="alert-danger">' + data.Message + '</div>'
+                                        ).slideDown(200).delay(2000).slideUp(200)
+                                    } else {
+                                        location.reload()
+                                    }
+                                },
+                            })
+                        }
                     }
                 })
                 $('.modal').modal('show')

@@ -148,10 +148,10 @@ class Inventory
 
     /**
      * @param int $itemId
+     * @param int $stock
      * @return mixed
-     * @throws Exception
      */
-    public function addStock($itemId)
+    public function addStock($itemId, $stock=1)
     {
         $inventoryItem = DB::selectOne('select * from inventory_user where item_id = ' . $itemId . ' and user_id = ' . $this->getUser());
         if ($inventoryItem) {
@@ -172,7 +172,7 @@ class Inventory
                     [
                         'user_id' => $this->getUser(),
                         'item_id' => $itemId,
-                        'current_stock' => 1
+                        'current_stock' => $stock
                     ]
                 );
         }

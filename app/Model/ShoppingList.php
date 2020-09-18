@@ -191,7 +191,7 @@ class ShoppingList
                 ]
             );
 
-            $userInventory->addStock($item);
+            $userInventory->addStock($item, $quantity);
         }
         return [
             'message' => 'List saved successfully'
