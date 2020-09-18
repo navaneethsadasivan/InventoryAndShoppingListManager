@@ -390,11 +390,13 @@
 
                 if (item) {
                     $('.searchRender').empty()
-                    $('#searchElement').css('borderColor', 'black')
                     sendData()
                 } else {
                     $('.searchRender').empty()
                     $('#searchElement').css('borderColor', 'red')
+                    setTimeout(function () {
+                        $('#searchElement').css('borderColor', 'black')
+                    }, 4000)
                     $('.alert-notification').empty().append(
                         '<div class="alert alert-danger">Enter an item to search</div>'
                     ).slideDown(200).delay(2000).slideUp(200)
@@ -644,30 +646,35 @@
                     type: 'GET',
                     url: '/getHistory',
                     success: function (data) {
-                        $.each(data.history, function (index, listHistoryDetails) {
+                        if (data.history.length === 0) {
                             $('.listHistory').append(
-                                '<div class="p-4 d-flex border-bottom">' +
-                                    '<div class="d-flex">' +
-                                        '<div class="container">' +
-                                            '<div class="row">' +
-                                                '<div class="col-12">' +
-                                                    '<h3>' + listHistoryDetails.listId + '</h3>' +
+                                '<p>No History Found</p>'
+                            )
+                        } else {
+                            $.each(data.history, function (index, listHistoryDetails) {
+                                $('.listHistory').append(
+                                    '<div class="p-4 d-flex border-bottom">' +
+                                        '<div class="d-flex">' +
+                                            '<div class="container">' +
+                                                '<div class="row">' +
+                                                    '<div class="col-12">' +
+                                                        '<h3>' + listHistoryDetails.listId + '</h3>' +
+                                                    '</div>' +
                                                 '</div>' +
-                                            '</div>' +
-                                            '<div class="row">' +
-                                                '<div class="col-12">' +
-                                                    '<label><strong>Date Created:</strong></label>' + listHistoryDetails.createdAt +
-                                                '</div>' +
-                                                '<div class="col-12">' +
-                                                    '<label><strong>Total Items:</strong></label>' + listHistoryDetails.totalItems +
-                                                '</div>' +
-                                                '<div class="col-12">' +
-                                                    '<label><strong>Total Price(&#163):</strong></label>' + listHistoryDetails.totalPrice +
+                                                '<div class="row">' +
+                                                    '<div class="col-12">' +
+                                                        '<label><strong>Date Created:</strong></label>' + listHistoryDetails.createdAt +
+                                                    '</div>' +
+                                                    '<div class="col-12">' +
+                                                        '<label><strong>Total Items:</strong></label>' + listHistoryDetails.totalItems +
+                                                    '</div>' +
+                                                    '<div class="col-12">' +
+                                                        '<label><strong>Total Price(&#163):</strong></label>' + listHistoryDetails.totalPrice +
+                                                    '</div>' +
                                                 '</div>' +
                                             '</div>' +
                                         '</div>' +
-                                    '</div>' +
-                                    '<div class="d-flex">' +
+                                        '<div class="d-flex">' +
                                         '<div class="historyListItems" id="' + listHistoryDetails.listId + '">' +
                                             '<div class="d-flex border">' +
                                                 '<div class="col-6">' +
@@ -678,24 +685,25 @@
                                                 '</div>' +
                                             '</div>' +
                                             '<div class="historyRender"></div>' +
-                                        '</div>' +
-                                    '</div>' +
-                                '</div>'
-                            )
-
-                            $.each(listHistoryDetails.items, function (itemName, itemQuantity) {
-                                $('#' + listHistoryDetails.listId + ' .historyRender').append(
-                                    '<div class="d-flex border">' +
-                                        '<div class="col-6">' +
-                                            itemName +
-                                        '</div>' +
-                                        '<div class="col-2">' +
-                                            itemQuantity +
+                                            '</div>' +
                                         '</div>' +
                                     '</div>'
                                 )
+
+                                $.each(listHistoryDetails.items, function (itemName, itemQuantity) {
+                                    $('#' + listHistoryDetails.listId + ' .historyRender').append(
+                                        '<div class="d-flex border">' +
+                                            '<div class="col-6">' +
+                                                itemName +
+                                            '</div>' +
+                                            '<div class="col-2">' +
+                                                itemQuantity +
+                                            '</div>' +
+                                        '</div>'
+                                    )
+                                })
                             })
-                        })
+                        }
                     }
                 })
                 $('.modal').modal('show')
